@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="assets/style.css">
 
   <script type="module" src="./libs/math-import.js"></script>
-  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+  <script>!('uc'in window)?window.uc=Object.assign(Object.create(null),{isNull:true}):0</script>
   <script src="libs/module.js" type="module"></script>
   <style>
     main { gap: 4px; grid-template-rows: auto 1fr; }
@@ -111,10 +111,10 @@
     }
     async function screenshot() {
       $('.content').style.overflow = 'visible';
-      // await api.screenshot((await snapdom.toPng($('.content'), { embedFonts: true, useCORS: true })).src);
+      // await uc.screenshot((await snapdom.toPng($('.content'), { embedFonts: true, useCORS: true })).src);
       let /** @type {string} */ dataURL = (await html2canvas($('.content'))).toDataURL();
       $('.content').style.overflow = '';
-      await api.screenshot(dataURL);
+      await uc.screenshot(dataURL);
     }
     async function main() {
       window.addEventListener('blur', () => $('.global-actions').style.opacity = 0.5);

@@ -26,7 +26,7 @@
   }
 })();
 
-const { contextBridge, ipcRenderer, webFrame, ipcMain } = require('electron');
+const { contextBridge, ipcRenderer, webFrame } = require('electron');
 const { versions, env, pid, platform } = require('process');
 const { release } = require('os');
 const { readFileSync, readdirSync, existsSync, statSync, statfsSync } = require('fs');
@@ -166,17 +166,15 @@ const api = {
   updateHelp(obj) {
     return ipcRenderer.invoke('update-help', obj);
   },
-  get exec() {
+  exec() {
     console.warn('Consider %cnot%c using `api.exec` in the renderer process for security reasons.\nThis is only for development purposes.', 'font-weight: bold; font-style: italic;', '');
-    return (function(cmd) {
-      return ipcRenderer.invoke('exec', cmd);
-    });
+    return ipcRenderer.invoke('exec', cmd);
   },
 
-  [Symbol.toStringTag]: 'ElectronAPI',
+  [Symbol.toStringTag]: 'UltimateCalculatorAPI',
 };
 
-contextBridge.exposeInMainWorld('api', api);
+contextBridge.exposeInMainWorld('uc', api);
 contextBridge.exposeInMainWorld('fs', {
   readFileSync(...args) {
     return readFileSync(...args);

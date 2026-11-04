@@ -6,14 +6,14 @@
   <title>Ultimate Calculator &ndash; Manual</title>
 
   <link rel="stylesheet" href="assets/style.css">
-  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+  <script>!('uc'in window)?window.uc=Object.assign(Object.create(null),{isNull:true}):0</script>
   <script src="libs/module.js" type="module"></script>
 </head>
 <body>
   <header class="global-actions">
-    <button class="btn-transparent close" title="Close" onclick="api.close()"><i class="mdi-window-close"></i></button>
-    <button class="btn-transparent maximize" title="Maximize" onclick="api.toggleMaximize()"><i class="mdi-window-maximize"></i></button>
-    <button class="btn-transparent minimize" title="Minimize" onclick="api.minimize()"><i class="mdi-minus"></i></button>
+    <button class="btn-transparent close" title="Close" onclick="uc.close()"><i class="mdi-window-close"></i></button>
+    <button class="btn-transparent maximize" title="Maximize" onclick="uc.toggleMaximize()"><i class="mdi-window-maximize"></i></button>
+    <button class="btn-transparent minimize" title="Minimize" onclick="uc.minimize()"><i class="mdi-minus"></i></button>
     <i style="width: 8px;"></i>
     <button class="btn-transparent keep-above" title="Keep this window above others"><i class="mdi-chevron-up"></i></button>
     <span class="title">Ultimate Calculator &ndash; Manual</span>

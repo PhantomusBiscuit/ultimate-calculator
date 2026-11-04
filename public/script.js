@@ -622,7 +622,7 @@ async function main() {
   //   const text = e.clipboardData.getData('text/plain').replaceAll(/\n|\r/gi, '').toWellFormed();
   //   document.execCommand('insertText', false, text);
   // });
-  api.setMinSize?.();
+  uc.setMinSize?.();
   // calcInput.addEventListener('change', e => requestAnimationFrame(() => keydownEvent()));
   // calcInput.addEventListener('keydown', (event) => {
   //   console.log('keydown');
@@ -663,7 +663,7 @@ var append = async text => {
   focusInput();
   // await [...text].forEachAsync(async char => {
   //   $('calc-input').dispatchEvent(new KeyboardEvent('keydown'));
-  //   await api.simulateChar(char);
+  //   await uc.simulateChar(char);
   // });
   document.execCommand('insertText', false, text);
 };
@@ -682,10 +682,10 @@ var moveCursor = offset => {
   o.setCursorPosition($('calc-input'), o.getCursorNodeInfo().startOffset + offset);
 };
 var backspace = () => {
-  focusInput(); api.simulateBackspace();
+  focusInput(); uc.simulateBackspace();
 };
 var _delete = () => {
-  focusInput(); api.simulateKey('Delete');
+  focusInput(); uc.simulateKey('Delete');
 };
 var buttonCallback = async (text, offset) => {
   focusInput();
@@ -698,7 +698,7 @@ var buttonCallback = async (text, offset) => {
 main();
 
 const /** @type {HTMLElement} */ menus = $('.menus');
-api.getMenuNames().then(items => {
+uc.getMenuNames().then(items => {
   items.forEachAsync(async item => {
     let menu = $n('button');
     menu.className = 'btn-transparent';
@@ -706,9 +706,9 @@ api.getMenuNames().then(items => {
     menu.onclick = async () => {
       let { x, y, height } = menu.getBoundingClientRect();
       height = Math.ceil(height);
-      api.showContextMenu(
-        Math.ceil(x * (await api.getZoom())),
-        Math.ceil((await api.getZoom()) * (y + height) + 8),
+      uc.showContextMenu(
+        Math.ceil(x * (await uc.getZoom())),
+        Math.ceil((await uc.getZoom()) * (y + height) + 8),
         item
       );
     };
@@ -730,10 +730,10 @@ api.getMenuNames().then(items => {
   //   padding: 2px 6px; display: grid; grid-template-columns: auto auto auto 1fr;
   //   z-index: 10; align-items: center; justify-content: center; gap: 6px;`;
   //   zoomPopup.innerHTML =
-  //     '<button class="btn-transparent" onclick="api.zoom(\'in\')"><i class="mdi mdi-plus"></i></button>'+
-  //     '<button class="btn-transparent" onclick="api.zoom(\'out\')"><i class="mdi mdi-minus"></i></button>'+
-  //     `<span class="zoom-indicator">${await api.getZoomLevel()}</span>`+
-  //     '<button class="btn-transparent" onclick="api.zoom(\'reset\')">Reset</button>';
+  //     '<button class="btn-transparent" onclick="uc.zoom(\'in\')"><i class="mdi mdi-plus"></i></button>'+
+  //     '<button class="btn-transparent" onclick="uc.zoom(\'out\')"><i class="mdi mdi-minus"></i></button>'+
+  //     `<span class="zoom-indicator">${await uc.getZoomLevel()}</span>`+
+  //     '<button class="btn-transparent" onclick="uc.zoom(\'reset\')">Reset</button>';
   //   $body.append(zoomPopup);
   //   document.onclick = e => {
   //     if (zoomPopup !== e.target || (!zoomPopup.contains(e.target))) {
@@ -1024,7 +1024,7 @@ document.addEventListener('keydown', async (e) => {
   if (/Alt\+Digit[1234]$/g.test(keybind)) {
     let digit = keybind.at(-1);
     let rect = $(`.menus :nth-of-type(${digit})`).getBoundingClientRect();
-    api.showContextMenu(rect.left, rect.bottom + 8, $(`.menus :nth-of-type(${digit})`).textContent);
+    uc.showContextMenu(rect.left, rect.bottom + 8, $(`.menus :nth-of-type(${digit})`).textContent);
     return;
   }
   switch (keybind) {
@@ -1050,7 +1050,7 @@ document.addEventListener('keydown', async (e) => {
       break;
     case 'Alt+Digit0':
       let rect = $('img').getBoundingClientRect();
-      api.showContextMenu(rect.left, rect.bottom + 8);
+      uc.showContextMenu(rect.left, rect.bottom + 8);
       break;
     case 'Escape':
       constantsMenu.close(); scopeMenu.close();
@@ -1068,13 +1068,13 @@ document.addEventListener('keydown', async (e) => {
           + parseFloat(getComputedStyle($main).paddingBottom);
 
         $('html').setAttribute('minimal-mode', '');
-        let dimensions = [api.minWidth, height];
-        api.setMinSize(...dimensions);
+        let dimensions = [uc.minWidth, height];
+        uc.setMinSize(...dimensions);
         requestAnimationFrame(() => {
           resizeTo(...dimensions);
         });
       } else {
-        setTimeout(() => { api.setMinSize() }, 100);
+        setTimeout(() => { uc.setMinSize() }, 100);
       }
       break;
     case 'Shift+F12':

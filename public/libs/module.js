@@ -282,8 +282,8 @@ try {
       );
     },
   });
-  if ((!('api' in window) || window.api?.isNull) && !('ultimate-calculator'in navigator.app)) {
-    window.api = legacyApi;
+  if ((!('uc' in window) || window.uc?.isNull) && !('ultimate-calculator'in navigator.app)) {
+    window.uc = legacyApi;
   };
 } catch (e) {
   new Toast('An error has occured:\n' + e.toString(), 'warning', 'assets/icons/warning.svg');
@@ -503,9 +503,9 @@ try {
 let storage = new CompressedStorage('ultimate-calculator', new Compressor);
 
 document.querySelector('.global-actions img').onclick = function(e) {
-  if (e.ctrlKey) { api.toggleDevTools(); return; }
+  if (e.ctrlKey) { uc.toggleDevTools(); return; }
   let rect = e.target.getBoundingClientRect();
-  api.showContextMenu(rect.left, rect.bottom + 8);
+  uc.showContextMenu(rect.left, rect.bottom + 8);
 };
 
 const favicon = document.getElementById('app-favicon');
@@ -1085,14 +1085,14 @@ var o = {
     }
     matchMedia('(prefers-color-scheme: dark)').onchange = event => {
       $('html').dataset.theme = event.matches ? 'dark' : 'light';
-      api.changeOverlayColor(
+      uc.changeOverlayColor(
         hslUnparsedToHex($('html').computedStyleMap().get('--bg-light')),
         hslUnparsedToHex($('html').computedStyleMap().get('--text')),
         32
       );
     };
     $('html').dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    api.changeOverlayColor(
+    uc.changeOverlayColor(
       hslUnparsedToHex($('html').computedStyleMap().get('--bg-light')),
       hslUnparsedToHex($('html').computedStyleMap().get('--text')),
       32
@@ -1755,7 +1755,7 @@ var m = {
      */
     function checkArrayNode(arg) {
       if (arg.items.toString().length > 100)
-        return `<calc-op>[</calc-op><span underline onclick="api.openNewWindow('uc://public/show-array.html?array=${arg.toString()}')">…</span>${arg.items.length}<calc-op>]</calc-op>`;
+        return `<calc-op>[</calc-op><span underline onclick="uc.openNewWindow('uc://public/show-array.html?array=${arg.toString()}')">…</span>${arg.items.length}<calc-op>]</calc-op>`;
       return `<calc-op>[</calc-op>${arg.items.map(subarg => check(subarg)).join('<calc-sep>,</calc-sep>')}<calc-op>]</calc-op>`;
     }
     /**
@@ -1764,7 +1764,7 @@ var m = {
      */
     function checkArray(arg) {
       if (arg.join(', ').length + 2 > 100)
-        return `<calc-op>[</calc-op><span underline onclick="api.openNewWindow('${
+        return `<calc-op>[</calc-op><span underline onclick="uc.openNewWindow('${
           location.protocol === 'uc:' ? 'uc://public/' : './'
         }show-array.html?array=${encodeURIComponent(
           btoa(`[${arg.join(', ')}]`)
@@ -1784,7 +1784,7 @@ var m = {
      */
     function checkMatrix(arg) {
       if (arg.toString().length > 100)
-        return `<calc-op>[</calc-op><span underline onclick="api.openNewWindow('${
+        return `<calc-op>[</calc-op><span underline onclick="uc.openNewWindow('${
           location.protocol === 'uc:' ? 'uc://public/' : './'
         }show-array.html?array=${encodeURIComponent(
           btoa(arg.toString())
@@ -1828,7 +1828,7 @@ var m = {
      * @returns {string}
      */
     function checkHelp(arg) {
-      return `<calc-help><span underline onclick="api.openNewWindow('./help.html?function=${arg.doc.name}')">${arg.doc.name}</span></calc-help>`;
+      return `<calc-help><span underline onclick="uc.openNewWindow('./help.html?function=${arg.doc.name}')">${arg.doc.name}</span></calc-help>`;
     }
     /**
      * @param {Function} arg
@@ -3376,7 +3376,7 @@ function getHelpMenuItems() {
     const prefix = isFunction ? '(ƒ) ' : '(c) ';
     if (!grouped[category]) grouped[category] = [];
     grouped[category].push({
-      label: key, click: () => api.openNewWindow(`uc://public/help.html?function=${key}`)
+      label: key, click: () => uc.openNewWindow(`uc://public/help.html?function=${key}`)
     });
   }
   return Object.keys(grouped)
@@ -3389,7 +3389,7 @@ function getHelpMenuItems() {
     }));
 }
 try {
-  api.updateHelp(
+  uc.updateHelp(
     getHelpMenuItems()
       .map(a => a.label + ':' + a.submenu.map(a => a.label).join(','))
       .join(';')
