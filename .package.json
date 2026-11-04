@@ -1,0 +1,27 @@
+{
+  "name": "ultimate-calculator",
+  "version": "1.0.0",
+  "description": "An electron-based ultimate calculator for arithmetic and algebraic functions.",
+  "main": "main.js",
+  "scripts": {
+    "start": "npx eletron .",
+    "package": "npx @electron/packager . ultimate-calculator --platform=linux --arch=x64 --out=dist"
+  },
+  "author": {
+    "name": "phantomusbiscuit",
+    "email": "salkidriss1607@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "mathjs": "^15.2.0",
+    "mime-types": "^3.0.2",
+    "nerdamer": "^1.1.13"
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}

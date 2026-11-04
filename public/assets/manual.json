@@ -1,0 +1,10 @@
+[
+  {
+    "title": "Key Markings",
+    "description": "Pressing the <i class=\"mdi mdi-alpha-s-box\"></i> or <i class=\"mdi mdi-alpha-a-box\"></i> key followed by a second key (except the <code>αβγ</code> key) performs the alternative function of the second key. The alternate function is indicated after the <i class=\"mdi mdi-alpha-s-box\"></i> or <i class=\"mdi mdi-alpha-a-box\"></i> key is pressed."
+  },
+  {
+    "title": "Reading the display",
+    "description": "The display of the calculator shows expressions you input, calculation result and various indicators.<br><h2 id=\"input-expression\">Input expression</h2>"
+  }
+]

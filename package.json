@@ -1,0 +1,85 @@
+{
+  "name": "ultimate-calculator",
+  "version": "3.4.13",
+  "description": "An electron-based ultimate calculator for arithmetic and algebraic functions.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package:linux": "npx @electron/packager . ultimate-calculator --platform=linux --arch=x64 --out=dist/linux",
+    "package:win32": "npx @electron/packager . ultimate-calculator --platform=win32 --arch=x64 --out=dist/win32",
+    "package:darwin": "npx @electron/packager . ultimate-calculator --platform=darwin --arch=x64 --out=dist/darwin",
+    "package:all": "npx @electron/packager . ultimate-calculator --platform=linux,win32,darwin --arch=x64 --out=dist/all"
+  },
+  "author": {
+    "name": "phantomusbiscuit",
+    "email": "salkidriss1607@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  },
+  "dependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron-updater": "^6.8.11",
+    "mathjs": "^15.2.0",
+    "mime-types": "^3.0.2",
+    "nerdamer": "^2.0.1",
+    "os": "^0.1.2"
+  },
+  "allowScripts": {
+    "electron@33.4.11": true,
+    "electron-winstaller@5.4.0": true
+  },
+  "build": {
+    "appId": "com.phantomusbiscuit.ultimatecalculator",
+    "productName": "Ultimate Calculator",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ultimate Calculator"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "favicon.png",
+      "category": "Utility"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "favicon.icns"
+    }
+  }
+}

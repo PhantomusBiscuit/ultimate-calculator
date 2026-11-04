@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Calculator &ndash; Function Preview</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+
+  <script type="module" src="./libs/math-import.js"></script>
+  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+  <script src="libs/module.js" type="module"></script>
+  <style>
+    main { gap: 4px; grid-template-rows: auto 1fr; }
+    .buttons { display: flex; gap: 4px;  > * { flex: 1; position: relative; } }
+    .content {
+      display: grid; background: var(--bg-light);
+      overflow: auto; font-family: var(--font-mono);
+      grid-template-rows: none;
+      grid-auto-rows: min-content;
+      width: 100%; max-height: 100%;
+    }
+    main[wrap-text] .line-content { white-space: pre-wrap; word-break: break-all; }
+    .line {
+      position: relative;
+      display: grid; grid-template-columns: auto 1fr;
+      grid-auto-columns: max-content; grid-auto-rows: max-content;
+      .line-content, .line-content * { white-space: pre; }
+      .line-content { border-left: 1px solid var(--bg-dark-3); padding-left: 4px; }
+      &::before {
+        content: attr(name);
+        background: var(--bg-light);
+        opacity: 0.5; font-size: 75%;
+        user-select: none; height: 1rlh;
+        display: flex; align-items: center; justify-content: end;
+        width: 32px; padding-right: 4px;
+      }
+    }
+    main[wrap-text] .wrap-text::before {
+      content: /*mdi-check*/'\F012C'; font-family: mdi;
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%); font-size: 75%;
+    }
+    .loading {
+      position: absolute; top: 32px;
+      left: 0; width: 100%; height: calc(100% - 32px);
+      margin: 2px; background: var(--backdrop); z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+  </style>
+  <link rel="stylesheet" class="hljs-theme">
+  <script src="libs/highlight.js"></script>
+  <script src="libs/hljs/javascript.js"></script>
+</head>
+<body>
+  <header class="global-actions">
+    <button class="btn-transparent close" title="Close" onclick="window.close()"><i class="mdi-window-close"></i></button>
+    <span class="title">Ultimate Calculator &ndash; Function Preview</span>
+    <img id="app-favicon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3C/svg%3E" alt="TuneFlow">
+  </header>
+  <main>
+    <div class="buttons">
+      <button class="btn-neutral wrap-text" onclick="document.querySelector('main').toggleAttribute('wrap-text')"><i class="mdi mdi-wrap"></i> Wrap text</button>
+      <button class="btn-neutral screenshot" onclick="screenshot()"><i class="mdi mdi-monitor-screenshot"></i> Save as PNG</button>
+      <select name="Themes" id="theme" onchange="selectTheme()">
+        <option value="a11y-dark">A11Y Dark</option>
+        <option value="a11y-light">A11Y Light</option>
+        <option value="androidstudio">Android Studio</option>
+        <option value="arduino-light">Arduino Light</option>
+        <option value="atom-one-dark">Atom One Dark</option>
+        <option value="atom-one-light">Atom One Light</option>
+        <option value="color-brewer">Color Brewer</option>
+        <option value="github-dark">GitHub Dark</option>
+        <option value="github">GitHub Light</option>
+        <option value="gml">GML</option>
+        <option value="googlecode">Googlecode</option>
+        <option value="idea">Idea Light</option>
+        <option value="intellij-light">Intellij Light</option>
+        <option value="lightfair">Lightfair</option>
+        <option value="lioshi">Lioshi</option>
+        <option value="monokai">Monokai</option>
+        <option value="night-owl">Night Owl</option>
+        <option value="nord">Nord</option>
+        <option value="panda-syntax-dark">Panda Syntax Dark</option>
+        <option value="shades-of-purple">Shades Of Purple</option>
+        <option value="tokyo-night-dark">Tokyo Night Dark</option>
+        <option value="vs">Visual Studio</option>
+        <option value="vs2015">Visual Studio 2015</option>
+        <option value="xcode">Xcode</option>
+      </select>
+    </div>
+    <div class="content"></div>
+    <div class="loading"><i class="mdi mdi-loading mdi-spin"></i> Loading&mldr;</div>
+  </main>
+</body>
+<scripts>
+  <script type="module">
+    import { $, getSettings, Compressor } from "./libs/module.js";
+    let c = new Compressor({ format: 'gzip', output: 'base64' });
+
+    function selectTheme() {
+      if ($('#theme').selectedOptions[0].textContent.match(/\blight\b/gi)) $('.content').setAttribute('data-theme', 'light');
+      else $('.content').setAttribute('data-theme', 'dark');
+      $('.hljs-theme').href =
+        `//public/assets/${$('#theme').value}.min.css`;
+    }
+    function format(text = '', opts = {}) {
+      return hljs.highlight(text, { language: 'js', ...opts }).value.split('\n')
+        .map((a, i) => `<section class="line" name="${i+1}"><div class="line-content">${a}</div></section>`)
+        .join('\n');
+    }
+    async function screenshot() {
+      $('.content').style.overflow = 'visible';
+      // await api.screenshot((await snapdom.toPng($('.content'), { embedFonts: true, useCORS: true })).src);
+      let /** @type {string} */ dataURL = (await html2canvas($('.content'))).toDataURL();
+      $('.content').style.overflow = '';
+      await api.screenshot(dataURL);
+    }
+    async function main() {
+      window.addEventListener('blur', () => $('.global-actions').style.opacity = 0.5);
+      window.addEventListener('focus', () => $('.global-actions').style.opacity = 1);
+      $('.hljs-theme').href = `//public/assets/${getSettings().javascriptTheme}.min.css`;
+      $('#theme').value = getSettings().javascriptTheme;
+
+      const mainElement = $('.content');
+      let text = await c.decompressText(new URLSearchParams(location.search).get('function'));
+      const mathjsTypedFn = 'function theTypedFn(arg0, arg1) {\n      if (arguments.length === len0 && test00(arg0) && test01(arg1)) {\n        return fn0.apply(this, arguments);\n      }\n      if (arguments.length === len1 && test10(arg0) && test11(arg1)) {\n        return fn1.apply(this, arguments);\n      }\n      if (arguments.length === len2 && test20(arg0) && test21(arg1)) {\n        return fn2.apply(this, arguments);\n      }\n      if (arguments.length === len3 && test30(arg0) && test31(arg1)) {\n        return fn3.apply(this, arguments);\n      }\n      if (arguments.length === len4 && test40(arg0) && test41(arg1)) {\n        return fn4.apply(this, arguments);\n      }\n      if (arguments.length === len5 && test50(arg0) && test51(arg1)) {\n        return fn5.apply(this, arguments);\n      }\n      return generic.apply(this, arguments);\n    }';
+      if (!text) mainElement.innerHTML = format('// No function provided.');
+      else mainElement.innerHTML = format(text === mathjsTypedFn ? ('// mathjs native code:\n' + mathjsTypedFn) : text);
+    }
+    setTimeout(() => {
+      main();
+    }, 500);
+  </script>
+</scripts>
+</html>

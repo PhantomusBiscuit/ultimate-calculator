@@ -1,0 +1,35 @@
+{
+  // Editor-only project config. Nothing here affects the runtime or packaging
+  // (main.js / preload.js are untouched and stay outside this program).
+  "compilerOptions": {
+    "target": "es2025",
+    "lib": ["es2025", "dom", "dom.iterable"],
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    // Treats every .js file without top-level import/export as a *script*, so
+    // top-level const/var share one global scope across module.js <-> script.js.
+    "moduleDetection": "legacy",
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  },
+  // Loads mathjs' typings, whose `export as namespace math` (line 6 of
+  // types/index.d.ts) makes `math` a real global for both values
+  // (math.evaluate) and the JSDoc type refs (math.MathNode, math.Parser …).
+  "files": ["node_modules/mathjs/types/index.d.ts", "public/libs/module.js"],
+  "include": ["public/**/*.js"],
+  // Vendored bundles: keep them out of the program (parse cost + noise).
+  "exclude": [
+    "node_modules",
+    "dist",
+    "public/libs/common/**",
+    "public/libs/mathjs.js",
+    "public/libs/math.js",
+    "public/libs/import.js",
+    "public/libs/highlight.js",
+    "public/libs/hljs/**",
+    "public/libs/html2canvas.js",
+    "public/libs/snapdom.js",
+    "public/libs/nerdamer/**"
+  ]
+}

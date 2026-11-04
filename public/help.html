@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Calculator &ndash; Help</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+
+  <script type="module" src="libs/math-import.js"></script>
+  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+  <style>
+    main { overflow-y: auto; }
+    .help { display: grid; grid-template-columns: auto 1fr; gap: 6px; overflow-y: auto; }
+    .big { font-size: 125%; }
+    .key { font-weight: bold; }
+    .value { margin-left: 1em; overflow-x: auto; }
+    .expr {
+      align-content: center;
+      width: max-content;
+      margin-bottom: 4px;
+      > calc:first-child { position: sticky; left: 0; }
+    }
+    .value:has(.expr) {
+      display: grid; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="global-actions">
+    <button class="btn-transparent close" title="Close" onclick="window.close()"><i class="mdi-window-close"></i></button>
+    <span class="title">Ultimate Calculator &ndash; Help</span>
+    <img id="app-favicon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3C/svg%3E" alt="TuneFlow">
+  </header>
+  <main>
+    <section class="help"></section>
+    <div class="loading"><i class="mdi mdi-loading mdi-spin"></i> Loading&mldr;</div>
+  </main>
+</body>
+<scripts>
+  <script type="module">
+    import { $, m, $main } from './libs/module.js';
+
+    async function main() {
+      let fn = new URLSearchParams(location.search).get('function');
+      let help = math.help(fn);
+
+      let doc = help.doc || {};
+      math.config({ number: 'number' });
+      let desc = [];
+      if (doc.name)
+        desc.push({ label: 'Name', value: m.format(math.parse(doc.name)), valueType: 'big' });
+      if (doc.category)
+        desc.push({ label: 'Category', value: `<b>${doc.category}</b>`, valueType: 'big' });
+      if (doc.description)
+        desc.push({ label: 'Description', value: doc.description });
+      if (doc.syntax)
+        desc.push({ label: 'Syntax', value: doc.syntax.map(item => m.format(math.parse(item.replaceAll('...', ' ___three_dots___ ')))).join('<calc-sep style="display:inline-block;width:1.5em">;</calc-sep>') });
+      if (doc.examples) {
+        let subDesc = { label: 'Examples', value: '' };
+        let scope = {};
+        for (let i = 0; i < doc.examples.length; i++) {
+          let expr = doc.examples[i];
+          subDesc.value += `<div class="expr">${m.format(math.parse(expr))}`;
+          let res = undefined;
+          try { res = math.parse(expr).evaluate(scope); }
+          catch (error) { res = error; }
+          if (res !== undefined && !math.isHelp(res))
+            subDesc.value += '<br><calc-op class="equals" style="margin:0 1em">=</calc-op>' + m.format(res) + '</div>';
+        }
+        desc.push(subDesc);
+      }
+      if (doc.mayThrow && doc.mayThrow.length) {
+        desc.push({ label: 'May throw', value: doc.mayThrow.map(a => String(a).toSafeHTML()).join('\n') })
+        // desc += "Throws: " + doc.mayThrow.join(", ") + "\n\n";
+      }
+      if (doc.seealso && doc.seealso.length) {
+        desc.push({ label: 'See also', value: doc.seealso.map(a => m.format(new math.SymbolNode(a.match(/[\w\d.]+/gi)[0]))).join('<calc-sep style="display:inline-block;width:1em">,</calc-sep>') })
+        // desc += "See also: " + doc.seealso.join(", ") + "\n";
+      }
+      $main.querySelector('.help').innerHTML = desc.map(a => `<span class="key">${a.label}</span><span class="value${' ' + (a.valueType ?? '')}">${a.value}</span>`).join('')
+    }
+    setTimeout(() => {
+      main();
+    }, 100);
+  </script>
+</scripts>
+</html>

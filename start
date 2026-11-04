@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+if [ "$1" == 'clear' ]; then
+  clear
+fi
+__TEMP_VAR__=$(dirname "${BASH_SOURCE[0]}")
+cd "${__TEMP_VAR__}"
+npm --no-update-notifier start -- $@
+# exec electron ./main.js
+# nohup npm run start > /dev/null 2>&1 & disown
+#./dist/linux/ultimate-calculator-linux-x64/ultimate-calculator
+# nohup ./dist/linux/ultimate-calculator-linux-x64/ultimate-calculator -- $@ > /dev/null 2>&1 & disown

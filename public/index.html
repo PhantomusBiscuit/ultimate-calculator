@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Calculator</title>
+
+  <link rel="stylesheet" href="./assets/style.css">
+  <script type="module" src="./libs/math-import.js"></script>
+  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+
+  <script src="./libs/module.js" type="module"></script>
+  <script src="./script.js" type="module"></script>
+
+  <!-- <script src="./libs/nerdamer/nerdamer.core.js"></script>
+  <script src="./libs/nerdamer/Algebra.js"></script>
+  <script src="./libs/nerdamer/Calculus.js"></script>
+  <script src="./libs/nerdamer/Solve.js"></script> -->
+</head>
+<body>
+  <header class="global-actions">
+    <button class="btn-transparent close" title="Close" onclick="api.close()"><i class="mdi-window-close"></i></button>
+    <button class="btn-transparent maximize" title="Maximize" onclick="api.toggleMaximize()"><i class="mdi-window-maximize"></i></button>
+    <button class="btn-transparent minimize" title="Minimize" onclick="api.minimize()"><i class="mdi-minus"></i></button>
+    <i style="width: 8px;"></i>
+    <button class="btn-transparent keep-above" title="Keep this window above others"><i class="mdi-chevron-up"></i></button>
+    <span class="title">Ultimate Calculator</span>
+    <div class="menus"></div>
+    <img id="app-favicon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3C/svg%3E" alt="TuneFlow">
+  </header>
+  <main>
+    <div class="loading"><i class="mdi mdi-spin mdi-loading"></i> Loading&mldr;</div>
+  </main>
+  <dialog id="result-types-dialog"></dialog>
+  <div class="context-menu" popover="auto"></div>
+  <section class="debug-status" hidden>
+    <section class="item key-value-pairs">
+      <b>FPS<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>Time<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>Size<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>Refresh rate<i class="colon">:&nbsp;</i></b><span><unknown></unknown></span>
+      <b>PID<i class="colon">:&nbsp;</i></b><span><unknown></unknown></span>
+      <b>Uptime<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <i></i><i></i>
+      <b>Electron<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>Nodejs<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>Chromium<i class="colon">:&nbsp;</i></b><span><null></null></span>
+      <b>V8<i class="colon">:&nbsp;</i></b><span><null></null></span>
+    </section>
+    <section class="item">
+      Press <div class="shortcut">
+        <div key="shift"></div>
+        <div key="F10"></div>
+      </div> to copy the debug info.
+    </section>
+  </section>
+  <section class="toasts"></section>
+</body>
+<scripts>
+  <style>
+  .debug-status {
+    position: fixed; bottom: 6px; right: 6px;
+    max-width: calc(100vw - 12px);
+    width: max-content; flex-wrap: wrap;
+    display: flex; gap: 4px; align-items: end;
+    z-index: 100; flex-direction: column;
+  }
+  .debug-status .colon { zoom: 0.001; }
+  .debug-status > .item {
+    outline: 2px solid var(--bg-dark-2);
+    border-radius: 1em; padding: .5em 1em;
+    pointer-events: none;
+    width: max-content; background: var(--bg-dark);
+    gap: 4px;
+
+    display: flex;
+    &.key-value-pairs { display: grid; grid-template-columns: 1fr auto; gap: 0.25em 1em; }
+  }
+  .debug-status > .item > * {
+    text-wrap-mode: nowrap;
+    flex: 0; font-variant-numeric: tabular-nums;
+  }
+  </style>
+  <script type="module">
+    import { $, o, Toast } from './libs/module.js';
+
+    window.addEventListener('error', e =>
+      new Toast('An error has occured.\n' + e.error.message, 'error', 'assets/icons/error.svg')
+    );
+    window.addEventListener('unhandledrejection', e =>
+      new Toast('An error has occured.\n' + e.reason.message, 'error', 'assets/icons/error.svg')
+    );
+    const maximizeBtn = document.querySelector('.global-actions .maximize [class^=mdi]');
+    const alwaysOnTopBtn = document.querySelector('.global-actions .keep-above');
+
+    document.querySelector('.global-actions .keep-above').onclick = () => api?.toggleKeepOnTop?.();
+    api?.onWindowState?.(state => {
+      alwaysOnTopBtn.setAttribute('data-on', `${state?.isAlwaysOnTop ?? false}`);
+      maximizeBtn.className = state?.isMaximized ? 'mdi-window-restore' : 'mdi-window-maximize';
+      maximizeBtn.setAttribute('data-on', state.isFullScreen);
+    });
+    api?.isAlwaysOnTop?.()?.then(state => {
+      alwaysOnTopBtn.setAttribute('data-on', `${state ?? false}`);
+    });
+    api?.isMaximized?.()?.then(state => {
+      maximizeBtn.className = state ? 'mdi-window-restore' : 'mdi-window-maximize';
+    });
+    const debugMenu = document.querySelector('.debug-status');
+    const refreshRate = CSS.Hz(30);
+    let fps = NaN;
+    const times = [];
+
+    window.addEventListener('keydown', async e => {
+      if (e.key === 'F10' && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) debugMenu.toggleAttribute('hidden');
+      if (e.key === 'F10' && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        await navigator.clipboard.writeText(
+          $('.key-value-pairs').textContent.split('\n').map(a => a.trim()).join('\n').trim()
+        );
+        new Toast('Copied debug info successfully', 'success', 'assets/icons/success.svg');
+      }
+    });
+
+    async function loop() {
+      let start = performance.now();
+      requestAnimationFrame(() => {
+        fps = 1000 / (performance.now() - start);
+      });
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    const versions = api?.versions?.();
+    setInterval(() => {
+      if (debugMenu?.hasAttribute?.('hidden')) return;
+      let children = [
+        debugMenu.children.item(0).querySelectorAll('span'),
+        debugMenu.children.item(1).querySelectorAll('span')
+      ];
+
+      [...children[0]].forEach((el, i) => {
+        switch (i) {
+          case 0: el.textContent = fps.toFixed(0); break;
+          case 1: el.textContent = new Date().toISOString(); break;
+          case 2: el.textContent = innerWidth + '×' + innerHeight; break;
+          case 3: el.textContent = `${refreshRate.toString()} (${(1000 / refreshRate.value).toFixed(2)}ms)`; break;
+          case 4: el.textContent = api?.pid?.(); break;
+          case 5: el.textContent = o?.formatTime((api?.appUptime?.() ?? -1000) / 1000); break;
+
+          case 6: el.textContent = versions.electron; break;
+          case 7: el.textContent = versions.node; break;
+          case 8: el.textContent = versions.chrome; break;
+          case 9: el.textContent = versions.v8; break;
+          default: break;
+        }
+      });
+    }, 1000 / refreshRate.value);
+  </script>
+</scripts>
+</html>

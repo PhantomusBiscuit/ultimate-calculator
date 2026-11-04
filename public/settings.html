@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Calculator &ndash; Preferences</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    main { grid-template-rows: calc(1lh + 26px) 1fr !important; }
+    .groups {
+      display: flex; flex-wrap: nowrap;
+      flex-flow: nowrap; overflow-x: scroll;
+      gap: 4px; padding-bottom: 4px; margin-bottom: 4px;
+      .group {
+        background: var(--bg-dark); padding: 4px 12px;
+        position: relative; border-radius: 8px;
+        font-weight: bold; text-decoration: none;
+        align-content: center; overflow: hidden;
+        > span { z-index: 1; position: sticky; }
+        &[selected]::before {
+          content: ''; position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          z-index: 0; background: linear-gradient(
+            to top, var(--button-o) 0%, var(--button-o) 5%,
+            hsl(from var(--button) h s l / 0.5) 5%, transparent 75%
+          );
+        }
+      }
+    }
+    .content {
+      .group-content {
+        display: grid; gap: 4px;
+        grid-auto-rows: min-content;
+        overflow-y: auto; padding: 0 6px;
+        .group-item {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr;
+          align-items: center;
+          .label { display: inline-grid; .desc { opacity: 0.75; font-size: 0.75em; } }
+          > input:not([type=checkbox]), > select {
+            min-width: 150px;
+          }
+        }
+      }
+    }
+
+  </style>
+
+  <script>!('api'in window)?window.api=Object.assign(Object.create(null),{isNull:true}):0</script>
+</head>
+<body>
+  <header class="global-actions">
+    <button class="btn-transparent close" title="Close" onclick="window.close()"><i class="mdi-window-close"></i></button>
+    <span class="title">Ultimate Calculator &ndash; Preferences</span>
+    <img id="app-favicon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3C/svg%3E" alt="TuneFlow">
+  </header>
+  <main>
+    <div class="groups"></div>
+    <div class="content"></div>
+    <div class="loading"><i class="mdi mdi-loading mdi-spin"></i> Loading&mldr;</div>
+  </main>
+</body>
+<scripts>
+  <script type="module">
+    import { $, $n, o, $$, getSettings } from './libs/module.js';
+    async function main() {
+      /**
+       * @typedef {{
+       *  label?: string; description?: string; type: 'list';
+       *  values: ({ label: string; value: string })[];
+       *  default: number; id: string;
+       * }} SettingList
+       *
+       * @typedef {{
+       *  label?: string; description?: string; type: 'check';
+       *  default: 0 | 1; id: string;
+       * }} SettingCheck
+       *
+       * @typedef {{
+       *  label?: string; description?: string; type: 'number';
+       *  min: number; max: number; default: number; id: string;
+       * }} SettingNumber
+       *
+       * @typedef {{
+       *  label?: string; type: 'content';
+       *  values: BaseSettingGeneric[];
+       * }} SettingGroup
+       */
+      /**
+       * The union of all possible settings.
+       * @typedef {SettingList | SettingCheck | SettingNumber | SettingGroup} BaseSettingGeneric
+       */
+      /**
+       * The generic mapper.
+       * @template {'list' | 'content' | 'number' | 'check'} T
+       * @typedef {(
+       *  T extends 'list' ? SettingList :
+       *  T extends 'content' ? SettingGroup :
+       *  T extends 'number' ? SettingNumber :
+       *  T extends 'check' ? SettingCheck :
+       *  never
+       * )} BaseSetting
+       */
+      let /** @type {Object<string, BaseSettingGeneric>} */ s = getSettings().html;
+      function createGroupTitle(/** @type {SettingGroup} */ group) {
+        let g = $n('a');
+        g.className = 'group';
+        g.href = `#${group.label.replace(/\s/g, '-').replace(/[^a-z0-9\-_]/gi, '_').toLowerCase()}`
+        g.innerHTML = `<span>${group.label.toSafeHTML()}</span>`;
+        return g;
+      }
+      async function createGroupContent(/** @type {SettingGroup} */ group, /** @type {string} */ id) {
+        let g = $n('div');
+        g.className = 'group-content';
+        g.id = id;
+        g.append(
+          ...await group.values.mapAsync(async groupItem => createGroupItem(await groupItem))
+        )
+        return g;
+      }
+      function createGroupItem(/** @type {BaseSettingGeneric} */ groupItem) {
+        const id = o.generateUID();
+        let gi = $n('div');
+        gi.className = 'group-item';
+        gi.innerHTML =
+          `<label class="label" for="${id}">`+
+            `<span class="label-text">${(groupItem.label ?? '')}</span>${
+              groupItem.description ? `<span class="desc">${groupItem.description}</span>` : ''
+            }`+
+          `</label>`+
+          (
+            groupItem.type === 'number' ? `<input id="${id}" type="number" min="${groupItem.min ?? 0}" max="${groupItem.max ?? 0}" value="${getSettings().get(groupItem.id) ?? groupItem.default}">` :
+            groupItem.type === 'check' ? `<input id="${id}" type="checkbox">` :
+            groupItem.type === 'list' ? `<select id="${id}">${
+              groupItem.values.map((v, i) => `<option value="${i}">${Object.assign($n('i'),{innerHTML:v.label}).textContent.toSafeHTML()}</option>`).join('')
+            }</select>` : '<i dim>No input</i>'
+          );
+        gi.$('#'+id).onchange = (e) => {
+          getSettings().set(
+            groupItem.id, (
+              groupItem.type === 'number' ? e.target.value :
+              groupItem.type === 'check' ? (!!e.target.checked) :
+              groupItem.type === 'list' ? groupItem.values[e.target.selectedIndex].value : null
+            )
+          )
+        };
+        if (groupItem.type === 'list') {
+          gi.$('#'+id).selectedIndex = groupItem.values.findIndex(a => a.value === getSettings().get(groupItem.id)) ?? groupItem.values[groupItem.default];
+        } if (groupItem.type === 'check') {
+          gi.$('#'+id).checked = getSettings().get(groupItem.id) ?? groupItem.default;
+        }
+        return gi;
+      }
+
+      await Object.values(s).forEachAsync(async group => {
+        $('main .groups').append(createGroupTitle(group));
+        $('main .content').append(await createGroupContent(group,
+          new URL($('main .groups').lastElementChild.href).hash.slice(1)
+        ));
+      });
+
+      window.addEventListener('hashchange', e => {
+        let hash = new URL(e.newURL).hash.slice(1) || new URL($('main .groups').firstElementChild.href).hash.slice(1);
+        $$('main .group-content').forEach(item => item.setAttribute('hidden', ''));
+        ($('main .group-content#' + hash) ?? $('main .group-content')).removeAttribute('hidden');
+
+        $$('main .group').forEach(item => item.removeAttribute('selected'));
+        ($('main .group[href="\\#' + hash + '"]') ?? $('main .group')).setAttribute('selected', '');
+      });
+      window.dispatchEvent(new HashChangeEvent('hashchange', { newURL: location.href }));
+    }
+    setTimeout(() => {
+      main();
+    }, 100);
+  </script>
+</scripts>
+</html>
