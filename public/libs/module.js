@@ -576,7 +576,7 @@ class Settings {
       values: [
         (async () => {
           return {
-            label: 'Font Family (Sans-serif)',
+            label: 'Application font',
             values: [
               { label: 'System', value: 'system-ui' },
               { label: 'Sans serif', value: 'sans-serif' },
@@ -593,7 +593,7 @@ class Settings {
         })(),
         (async () => {
           return {
-            label: 'Font Family (Monospace)',
+            label: 'Expressions font',
             values: [
               { label: 'System', value: 'system-ui' },
               { label: 'Sans serif', value: 'sans-serif' },

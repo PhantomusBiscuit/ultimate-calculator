@@ -1,3 +1,4 @@
+try {
 const { readFileSync, writeFileSync } = require('fs');
 const os = require('node:os');
 if (process.argv.includes('--version')) {
@@ -516,8 +517,8 @@ function createWindow(url) {
 // }, 50);
 
 app?.disableHardwareAcceleration();
-// app?.commandLine?.appendSwitch('enable-low-end-device-mode');
-// app?.commandLine?.appendSwitch('disable-gpu');
+app?.commandLine?.appendSwitch('enable-low-end-device-mode');
+app?.commandLine?.appendSwitch('disable-gpu');
 app?.commandLine?.appendSwitch('js-flags', '--max-old-space-size=512');
 
 // const windows = new Map();
@@ -571,3 +572,7 @@ app?.commandLine?.appendSwitch('js-flags', '--max-old-space-size=512');
 //     }
 //   }`;
 // });
+} catch (e) {
+  console.error(e);
+  process.exit(1);
+}
