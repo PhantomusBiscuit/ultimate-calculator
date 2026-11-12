@@ -7,7 +7,8 @@
 > [!WARNING]
 > The app is still in development
 
-[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-6C8EFF?labelColor=080B14&style=flat-square)](./LICENSE)
+<!-- [![License](https://img.shields.io/github/license/PhantomusBiscuit/ultimate-calculator)](./LICENSE.md) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/PhantomusBiscuit/ultimate-calculator) -->
+![Version 3.4.13](https://img.shields.io/badge/version-3.4.13-blue)
 
 Ultimate Calculator is a desktop calculator built on [Electron](https://www.electronjs.org/) and [mathjs](https://mathjs.org/). It combines a keyboard-first calculator interface with a full computer-algebra engine: evaluate expressions, simplify to exact fractions, switch between number bases, inspect variables, and look up mathjs functions without leaving the app.
 
@@ -219,109 +220,140 @@ On macOS, use <kbd>Cmd</kbd> where <kbd>Ctrl</kbd> is listed.
 
 ## License
 
-Released under the **PolyForm Noncommercial 1.0.0**:
-<fieldset>
-<legend>License</legend>
-<span>
-<h1 id="polyform-noncommercial-license-100">PolyForm Noncommercial License 1.0.0</h1>
-<p><a href="https://polyformproject.org/licenses/noncommercial/1.0.0" rel="noopener noreferrer" target="_blank">https://polyformproject.org/licenses/noncommercial/1.0.0</a></p>
-<h2 id="acceptance">Acceptance</h2>
-<p>In order to get any license under these terms, you must agree
+Released under the [**PolyForm Noncommercial 1.0.0**](./LICENSE.md):
+```
+# PolyForm Noncommercial License 1.0.0
+
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
+
+## Acceptance
+
+In order to get any license under these terms, you must agree
 to them as both strict obligations and conditions to all
-your licenses.</p>
-<h2 id="copyright-license">Copyright License</h2>
-<p>The licensor grants you a copyright license for the
+your licenses.
+
+## Copyright License
+
+The licensor grants you a copyright license for the
 software to do everything you might do with the software
 that would otherwise infringe the licensor's copyright
 in it for any permitted purpose.  However, you may
-only distribute the software according to <a href="#distribution-license">Distribution
-License</a> and make changes or new works
-based on the software according to <a href="#changes-and-new-works-license">Changes and New Works
-License</a>.</p>
-<h2 id="distribution-license">Distribution License</h2>
-<p>The licensor grants you an additional copyright license
+only distribute the software according to [Distribution
+License](#distribution-license) and make changes or new works
+based on the software according to [Changes and New Works
+License](#changes-and-new-works-license).
+
+## Distribution License
+
+The licensor grants you an additional copyright license
 to distribute copies of the software.  Your license
 to distribute covers distributing the software with
-changes and new works permitted by <a href="#changes-and-new-works-license">Changes and New Works
-License</a>.</p>
-<h2 id="notices">Notices</h2>
-<p>You must ensure that anyone who gets a copy of any part of
+changes and new works permitted by [Changes and New Works
+License](#changes-and-new-works-license).
+
+## Notices
+
+You must ensure that anyone who gets a copy of any part of
 the software from you also gets a copy of these terms or the
 URL for them above, as well as copies of any plain-text lines
-beginning with <code>Required Notice:</code> that the licensor provided
-with the software.  For example:</p>
-<blockquote>
-  <p>Required Notice: Copyright Yoyodyne, Inc. (<a href="http://example.com" rel="noopener noreferrer" target="_blank">http://example.com</a>)</p>
-</blockquote>
-<h2 id="changes-and-new-works-license">Changes and New Works License</h2>
-<p>The licensor grants you an additional copyright license to
+beginning with `Required Notice:` that the licensor provided
+with the software.  For example:
+
+> Required Notice: Copyright Yoyodyne, Inc. (http://example.com)
+
+## Changes and New Works License
+
+The licensor grants you an additional copyright license to
 make changes and new works based on the software for any
-permitted purpose.</p>
-<h2 id="patent-license">Patent License</h2>
-<p>The licensor grants you a patent license for the software that
+permitted purpose.
+
+## Patent License
+
+The licensor grants you a patent license for the software that
 covers patent claims the licensor can license, or becomes able
-to license, that you would infringe by using the software.</p>
-<h2 id="noncommercial-purposes">Noncommercial Purposes</h2>
-<p>Any noncommercial purpose is a permitted purpose.</p>
-<h2 id="personal-uses">Personal Uses</h2>
-<p>Personal use for research, experiment, and testing for
+to license, that you would infringe by using the software.
+
+## Noncommercial Purposes
+
+Any noncommercial purpose is a permitted purpose.
+
+## Personal Uses
+
+Personal use for research, experiment, and testing for
 the benefit of public knowledge, personal study, private
 entertainment, hobby projects, amateur pursuits, or religious
 observance, without any anticipated commercial application,
-is use for a permitted purpose.</p>
-<h2 id="noncommercial-organizations">Noncommercial Organizations</h2>
-<p>Use by any charitable organization, educational institution,
+is use for a permitted purpose.
+
+## Noncommercial Organizations
+
+Use by any charitable organization, educational institution,
 public research organization, public safety or health
 organization, environmental protection organization,
 or government institution is use for a permitted purpose
 regardless of the source of funding or obligations resulting
-from the funding.</p>
-<h2 id="fair-use">Fair Use</h2>
-<p>You may have "fair use" rights for the software under the
-law. These terms do not limit them.</p>
-<h2 id="no-other-rights">No Other Rights</h2>
-<p>These terms do not allow you to sublicense or transfer any of
+from the funding.
+
+## Fair Use
+
+You may have "fair use" rights for the software under the
+law. These terms do not limit them.
+
+## No Other Rights
+
+These terms do not allow you to sublicense or transfer any of
 your licenses to anyone else, or prevent the licensor from
 granting licenses to anyone else.  These terms do not imply
-any other licenses.</p>
-<h2 id="patent-defense">Patent Defense</h2>
-<p>If you make any written claim that the software infringes or
+any other licenses.
+
+## Patent Defense
+
+If you make any written claim that the software infringes or
 contributes to infringement of any patent, your patent license
 for the software granted under these terms ends immediately. If
 your company makes such a claim, your patent license ends
-immediately for work on behalf of your company.</p>
-<h2 id="violations">Violations</h2>
-<p>The first time you are notified in writing that you have
+immediately for work on behalf of your company.
+
+## Violations
+
+The first time you are notified in writing that you have
 violated any of these terms, or done anything with the software
 not covered by your licenses, your licenses can nonetheless
 continue if you come into full compliance with these terms,
 and take practical steps to correct past violations, within
 32 days of receiving notice.  Otherwise, all your licenses
-end immediately.</p>
-<h2 id="no-liability">No Liability</h2>
-<p><strong><em>As far as the law allows, the software comes as is, without
+end immediately.
+
+## No Liability
+
+***As far as the law allows, the software comes as is, without
 any warranty or condition, and the licensor will not be liable
 to you for any damages arising out of these terms or the use
-or nature of the software, under any kind of legal claim.</em></strong></p>
-<h2 id="definitions">Definitions</h2>
-<p>The <strong>licensor</strong> is the individual or entity offering these
-terms, and the <strong>software</strong> is the software the licensor makes
-available under these terms.</p>
-<p><strong>You</strong> refers to the individual or entity agreeing to these
-terms.</p>
-<p><strong>Your company</strong> is any legal entity, sole proprietorship,
+or nature of the software, under any kind of legal claim.***
+
+## Definitions
+
+The **licensor** is the individual or entity offering these
+terms, and the **software** is the software the licensor makes
+available under these terms.
+
+**You** refers to the individual or entity agreeing to these
+terms.
+
+**Your company** is any legal entity, sole proprietorship,
 or other kind of organization that you work for, plus all
 organizations that have control over, are under the control of,
-or are under common control with that organization.  <strong>Control</strong>
+or are under common control with that organization.  **Control**
 means ownership of substantially all the assets of an entity,
 or the power to direct its management and policies by vote,
-contract, or otherwise.  Control can be direct or indirect.</p>
-<p><strong>Your licenses</strong> are all the licenses granted to you for the
-software under these terms.</p>
-<p><strong>Use</strong> means anything you do with the software requiring one
-of your licenses.</p>
-</span>
-</fieldset>
+contract, or otherwise.  Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the
+software under these terms.
+
+**Use** means anything you do with the software requiring one
+of your licenses.
+```
 
 See [`package.json`](package.json) for the license declaration.
 
