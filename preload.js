@@ -1,3 +1,7 @@
+/**
+ * Required Notice: Copyright Ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+ */
+
 (function () {
   const consoleTypes = ['log', 'info', 'warn', 'error', 'debug'];
   const stamp = () => (performance.now() / 1000).toFixed(4).padStart(11);
@@ -30,9 +34,11 @@ const { contextBridge, ipcRenderer, webFrame } = require('electron');
 const { versions, env, pid, platform } = require('process');
 const { release } = require('os');
 const { readFileSync, readdirSync, existsSync, statSync, statfsSync } = require('fs');
+const { version } = require('./package.json');
+
 const api = {
   versions() {
-    return { node: versions.node, chrome: versions.chrome, electron: versions.electron, v8: versions.v8 };
+    return { node: versions.node, chrome: versions.chrome, electron: versions.electron, v8: versions.v8, uc: version };
   },
   pid() {
     return pid;
@@ -79,7 +85,13 @@ const api = {
    * @param {string} menu
    */
   showContextMenu(x = 0, y = 0, menu) {
-    ipcRenderer.send('window:showContextMenu', { x: Math.trunc(x), y: Math.trunc(y) }, menu);
+    // ipcRenderer.send('window:showContextMenu', { x: Math.trunc(x), y: Math.trunc(y) }, menu);
+    contextBridge.executeInMainWorld({
+      func: (x, y, menu) => {
+        legacyUC.showContextMenu(x, y, menu);
+      },
+      args: [x, y, menu]
+    })
   },
   /**
    * @returns {string[]}
@@ -96,17 +108,19 @@ const api = {
   simulateChar(char) {
     ipcRenderer.send('keyboard:simulateChar', char);
   },
-  openNewWindow(location) {
-    ipcRenderer.send('window', 'openNewWindow', location);
+  openNewWindow(loc) {
+    loc = new URL(loc, window.location).toString();
+    ipcRenderer.send('window', 'openNewWindow', loc);
   },
-  openNewFunctionPreviewWindow(location) {
-    ipcRenderer.send('window', 'openNewFunctionPreviewWindow', location);
+  openNewFunctionPreviewWindow(loc) {
+    loc = new URL(loc, window.location).toString();
+    ipcRenderer.send('window', 'openNewFunctionPreviewWindow', loc);
   },
   screenshot(dataURI) {
     return ipcRenderer.invoke('handle-window', 'screenshot', dataURI);
   },
   setMinSize(x, y) {
-    ipcRenderer.send('window', 'setMinSize', { x: x || 750, y: y || 600 });
+    ipcRenderer.send('window', 'setMinSize', { x: x || 750, y: y || 600, id: webFrame.frameToken });
   },
   system: function () {
     const sessionType = env?.XDG_SESSION_TYPE;
@@ -132,8 +146,8 @@ const api = {
    * @param {number} height
    */
   changeOverlayColor: function (bg, symbolColor, height) {
-    height = parseInt(String(height)) || 32;
-    ipcRenderer.send('window', 'changeColorOfOverlay', { color: bg, symbolColor, height });
+    height = Math.max(32, parseInt(String(height)) || 32);
+    ipcRenderer.send('window', 'changeColorOfOverlay', { color: bg, symbolColor, height, id: webFrame.frameToken });
   },
   minWidth: 750,
   minHeight: 600,
@@ -168,8 +182,9 @@ const api = {
   },
   exec() {
     console.warn('Consider %cnot%c using `api.exec` in the renderer process for security reasons.\nThis is only for development purposes.', 'font-weight: bold; font-style: italic;', '');
-    return ipcRenderer.invoke('exec', cmd);
+    return ipcRenderer.invoke('exec', arguments[0]);
   },
+  version, id: webFrame.frameToken,
 
   [Symbol.toStringTag]: 'UltimateCalculatorAPI',
 };
@@ -293,4 +308,9 @@ window.addEventListener('resize', () => {
     api.changeOverlayColor(null, null, (32 * outerWidth) / innerWidth);
     prevZoomLevel = newZoomLevel;
   }
+});
+window.addEventListener('DOMContentLoaded', () => {
+  requestAnimationFrame(() => {
+    api.changeOverlayColor(null, null, (32 * outerWidth) / innerWidth);
+  });
 });

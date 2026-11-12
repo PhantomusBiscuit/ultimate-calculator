@@ -1,11 +1,18 @@
 <!DOCTYPE html>
+<!--
+  Required Notice: Copyright Ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+-->
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:image" content="./assets/hero-image.png">
+  <meta property="og:image" content="https://phantomusbiscuit.github.io/ultimate-calculator/public/assets/hero-image.png">
   <meta property="og:title" content="Ultimate Calculator">
   <meta property="og:description" content="The ultimate calculator for all your mathematical needs.">
+  <link rel="apple-touch-icon" href="../favicon.png">
+  <link rel="shortcut icon" href="../favicon.png" type="image/png">
+  <link rel="shortcut icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="../favicon.ico" type="image/vnd.microsoft.icon">
   <title>Ultimate Calculator</title>
 
   <link rel="stylesheet" href="./assets/style.css">
@@ -81,7 +88,7 @@
   }
   .debug-status > .item > * {
     text-wrap-mode: nowrap;
-    flex: 0; font-variant-numeric: tabular-nums;
+    flex: 0; font-variant-numeric: tabular-nums slashed-zero;
   }
   </style>
   <script type="module">
@@ -114,8 +121,12 @@
     const times = [];
 
     window.addEventListener('keydown', async e => {
-      if (e.key === 'F10' && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) debugMenu.toggleAttribute('hidden');
+      if (e.key === 'F10' && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        debugMenu.toggleAttribute('hidden');
+      }
       if (e.key === 'F10' && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
         await navigator.clipboard.writeText(
           $('.key-value-pairs').textContent.split('\n').map(a => a.trim()).join('\n').trim()
         );

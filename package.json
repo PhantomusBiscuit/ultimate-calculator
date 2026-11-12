@@ -14,7 +14,7 @@
     "name": "phantomusbiscuit",
     "email": "salkidriss1607@gmail.com"
   },
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
     "electron": "^45.2.2",
     "electron-builder": "^26.18.0"

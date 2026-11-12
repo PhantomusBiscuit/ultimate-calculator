@@ -1,3 +1,7 @@
+/**
+ * Required Notice: Copyright Ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+ */
+
 try {
 const { readFileSync, writeFileSync } = require('fs');
 const os = require('node:os');
@@ -83,10 +87,22 @@ ${C.white}ABOUT${C.reset}
   process.exit(0);
 }
 
-const { app, BrowserWindow, protocol, ipcMain, Menu, dialog, MenuItem } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  protocol,
+  ipcMain,
+  Menu,
+  dialog,
+  MenuItem,
+  nativeImage,
+  webFrameMain,
+  webContents,
+} = require('electron');
 const { lookup } = require('mime-types');
 const path = require('path');
 const { platform } = require('process');
+const { version } = require('./package.json');
 
 app.on('window-all-closed', () => {
   if (platform === 'darwin') return;
@@ -98,7 +114,7 @@ app.on('activate', () => {
 });
 
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'uc', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } },
+  { scheme: 'uc', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, } }
 ]);
 
 const serveFile = filePath => {
@@ -160,7 +176,7 @@ const /** @type {Electron.BrowserWindowConstructorOptions} */ presetWindow = {
   frame: true, center: true,
   roundedCorners: false,
   backgroundColor: '#000000',
-  hasShadow: false,
+  hasShadow: true, icon: nativeImage.createFromPath(path.join(__dirname, 'favicon.svg')),
   titleBarStyle: 'hidden',
   ...(
     process.platform !== 'darwin' ? {
@@ -212,12 +228,17 @@ function createWindow(url) {
       case 'openNewFunctionPreviewWindow':
         functionPreviewWindow(args[0]);
         break;
-      case 'setMinSize':
-        win.setMinimumSize(0, 0);
-        const [currentW, currentH] = win.getSize();
-        win.setSize(Math.max(currentW, args[0].x), Math.max(currentH, args[0].y));
-        win.setMinimumSize(args[0].x, args[0].y);
+      case 'setMinSize': {
+        let localWin = BrowserWindow.fromWebContents(
+          webContents.fromFrame(webFrameMain.fromFrameToken(_.senderFrame.processId, _.senderFrame.frameToken))
+        );
+
+        localWin.setMinimumSize(0, 0);
+        const [currentW, currentH] = localWin.getSize();
+        localWin.setSize(Math.max(currentW, args[0].x), Math.max(currentH, args[0].y));
+        localWin.setMinimumSize(args[0].x, args[0].y);
         break;
+      }
       case 'zoom':
         win.webContents.setZoomLevel(
           win.webContents.getZoomLevel() +
@@ -228,12 +249,14 @@ function createWindow(url) {
         win.webContents.reloadIgnoringCache();
         break;
       case 'changeColorOfOverlay':
-        BrowserWindow.getAllWindows().forEach(window => {
-          window.setTitleBarOverlay({
-            color: args[0]?.color,
-            symbolColor: args[0]?.symbolColor,
-            height: parseFloat(args[0]?.height) || 32,
-          });
+        let localWin = BrowserWindow.fromWebContents(
+          webContents.fromFrame(webFrameMain.fromFrameToken(_.senderFrame.processId, _.senderFrame.frameToken))
+        );
+
+        localWin.setTitleBarOverlay({
+          color: args[0]?.color,
+          symbolColor: args[0]?.symbolColor,
+          height: parseFloat(args[0]?.height) || 32,
         });
         break;
       default:
@@ -365,7 +388,7 @@ function createWindow(url) {
       ],
     },
     { label: 'Debug', submenu: [{ label: 'Toggle DevTools', accelerator: 'F12', role: 'toggleDevTools' }] },
-    { label: 'Help', id: 'help-entry', submenu: [{ label: 'Loading...', enabled: false }] },
+    { label: 'Help', id: 'help-entry', submenu: [] },
     {
       label: 'Alt. shortcuts',
       visible: false,
@@ -378,7 +401,7 @@ function createWindow(url) {
           label: 'Manual',
           click: () => newWindow({ maximizable: true, minimizable: true }, 'uc://public/manual.html'),
         },
-        { label: 'Version: 1.0.0', enabled: false },
+        { label: 'Version: ' + version, enabled: false },
       ],
     },
   ]);
@@ -420,7 +443,7 @@ function createWindow(url) {
   ]);
   ipcMain.handle('update-help', (_, str) => {
     const helpEntry = menu.getMenuItemById('help-entry');
-    if (helpEntry.submenu.items.length !== 1) return;
+    if (helpEntry.submenu.items.length !== 0) return;
     helpEntry.submenu.items = [];
     str = str.split(';').map(item => {
       let splitItem = item.split(/:|,/);

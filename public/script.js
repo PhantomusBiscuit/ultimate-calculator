@@ -1,13 +1,17 @@
+/**
+ * Required Notice: Copyright Ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+ */
+
 import {
   CalcDisplay, ButtonDisplay, colors, N, codeStyle,
   $, $$, $n, $body, $main, parser, m, o, lastCursorNode,
-  getSettings, storage, getHelpMenuItems
+  getSettings, storage, getHelpMenuItems, Toast
 } from './libs/module.js';
 let settings = getSettings();
 // #region - This part is only present in development
 Object.entries({
   $, $$, $n, $body, $main, parser, m, o, getSettings,
-  storage, storage, getHelpMenuItems
+  storage, storage, getHelpMenuItems, Toast
 }).forEach(item => window[item[0]] = item[1]);
 // #endregion
 
@@ -611,7 +615,7 @@ async function main() {
   let m = new MutationObserver(() => {
     requestAnimationFrame(() => keydownEvent());
   });
-  m.observe(calcInput, { characterData: true, subtree: true });
+  m.observe(calcInput, { characterData: true, subtree: true, childList: true });
   calcInput.addEventListener('keydown', e => {
     if (e.key !== 'Enter' || e.shiftKey) return;
     e.preventDefault();
@@ -974,13 +978,13 @@ function updateScopeMenu() {
     }
   };
 }
-parser.set = function(...args) {
-  let res = math.Parser.prototype.set.call(parser, ...args);
+parser.set = function() {
+  let res = math.Parser.prototype.set.call(parser, ...arguments);
   updateScopeMenu();
   return res;
 };
-parser.clear = function(...args) {
-  let res = math.Parser.prototype.clear.call(parser, ...args);
+parser.clear = function() {
+  let res = math.Parser.prototype.clear.call(parser, ...arguments);
   updateScopeMenu();
   return res;
 }
@@ -998,11 +1002,12 @@ historyMenu.id = 'history-menu';
 historyMenu.innerHTML =
   '<div class="text">'+
     '<div class="items"></div>'+
-    '<input class="input-field" type="text" id="scope-input" placeholder="Type a variable name (ex: mem)" spellcheck="false">'+
+    '<input class="input-field" type="text" id="history-input" placeholder="Type a variable name (ex: mem)" spellcheck="false">'+
     '<button class="btn-neutral remove"><i class="mdi mdi-trash-can-outline"></i></button>' +
     '<button class="btn-neutral close"><i class="mdi mdi-close"></i></button>' +
   '</div>'
 ;
+$body.append(historyMenu);
 // #endregion
 
 window.addEventListener('focus', () => $('calc-input').focus());
@@ -1029,34 +1034,38 @@ document.addEventListener('keydown', async (e) => {
   }
   switch (keybind) {
     case 'Ctrl+Shift+KeyS':
-      calcDisplay.shift();
+      e.preventDefault(); calcDisplay.shift();
       break;
     case 'Ctrl+Shift+KeyA':
-      calcDisplay.alpha();
+      e.preventDefault(); calcDisplay.alpha();
       break;
-    case 'Ctrl+Alt+KeyC':
-      constantsMenu.showModal();
+    case 'Ctrl+Shift+KeyC':
+      e.preventDefault(); constantsMenu.showModal();
       constantsMenu.$('.input-field').focus();
       break;
-    case 'Ctrl+Alt+KeyS':
-      scopeMenu.showModal();
+    case 'Ctrl+Shift+KeyS':
+      e.preventDefault(); scopeMenu.showModal();
       scopeMenu.$('.input-field').focus();
       break;
-    case 'Ctrl+Alt+KeyB':
-      calcDisplay.setNotation();
+    case 'Ctrl+Shift+KeyB':
+      e.preventDefault(); calcDisplay.setNotation();
       break;
-    case 'Ctrl+Shift+KeyI':
-      $('calc-input').focus();
+    case 'Ctrl+KeyM':
+      e.preventDefault(); historyMenu.showModal();
+      historyMenu.$('.input-field').focus();
+      break;
+    case 'Ctrl+KeyI':
+      e.preventDefault(); $('calc-input').focus();
       break;
     case 'Alt+Digit0':
-      let rect = $('img').getBoundingClientRect();
+      e.preventDefault(); let rect = $('img').getBoundingClientRect();
       uc.showContextMenu(rect.left, rect.bottom + 8);
       break;
     case 'Escape':
-      constantsMenu.close(); scopeMenu.close();
+      e.preventDefault(); constantsMenu.close(); scopeMenu.close();
       break;
     case 'Ctrl+Space':
-      $('html').toggleAttribute('minimal-mode');
+      e.preventDefault(); $('html').toggleAttribute('minimal-mode');
       const isMinimalMode = $('html').hasAttribute('minimal-mode');
       console.log(isMinimalMode);
       if (isMinimalMode) {
@@ -1078,7 +1087,7 @@ document.addEventListener('keydown', async (e) => {
       }
       break;
     case 'Shift+F12':
-      console.debug('Coming soon (debug screen)');
+      e.preventDefault(); console.debug('Coming soon (debug screen)');
     default:
       break;
   }
@@ -1086,7 +1095,7 @@ document.addEventListener('keydown', async (e) => {
 window.addEventListener('resize', () => {
   let injectedSS = $('head .__uc_injected_stylesheet');
   if (innerWidth / innerHeight < 0.65) {
-    if ($('head .__uc_injected_stylesheet')) {
+    if (injectedSS) {
       injectedSS.textContent = 'calc-btns { flex-direction: column; }';
       $$('calc-group').forEach(item => {
         item.style.flex = item.childElementCount;
@@ -1098,7 +1107,7 @@ window.addEventListener('resize', () => {
       $('head').appendChild(newInjectedSS);
     }
   } else {
-    if (injectedSS && injectedSS.textContent !== '') {
+    if (injectedSS) {
       injectedSS.textContent = '';
       $$('calc-group').forEach(item => {
         item.style.flex = Math.max(...[...item.children].map(a => {
@@ -1113,8 +1122,23 @@ window.addEventListener('resize', () => {
     }
   }
 });
-window.addEventListener('beforeunload', (e) => {
-  console.log(e);
-  e.preventDefault();
-  return setTimeout(() => {}, 1000);
-}, { once: true });
+
+// setInterval(async () => {
+//   if (calcDisplay.content[0] === '') return;
+//   let toast = new Toast('Auto saving…', 'info', './assets/icons/info.svg', 600_000);
+//   let stringifiedJSON = JSON.stringify(calcDisplay.content[2]);
+
+//   let history = (await storage.get('history')) ?? [];
+//   history.push({
+//     input: calcDisplay.content[0],
+//     output: stringifiedJSON === 'undefined' ? undefined : stringifiedJSON,
+//     timestamp: Date.now(), autosave: true
+//   });
+//   await storage.set('history', history);
+
+//   toast.node.$('.icon').src = './assets/icons/success.svg';
+//   toast.node.$('.title').textContent = 'Auto save successful';
+//   setTimeout(() => {
+//     toast.remove();
+//   }, 5000);
+// }, 360_000);

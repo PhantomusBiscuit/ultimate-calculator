@@ -1,4 +1,5 @@
-import { create, all, docs } from './mathjs.js';
+import { create, all, docs } from "./math+esm.js";
+// import { create, all, docs } from './mathjs.js';
 window.math = create(all);
 window.math.docs = docs;
 Object.defineProperty(math, Symbol.toStringTag, {
@@ -6,6 +7,7 @@ Object.defineProperty(math, Symbol.toStringTag, {
   enumerable: false,
   configurable: false,
 });
+
 console.debug(
   '%cmath%c library is imported at %c%s%cs',
   'background: canvas; padding: 1.5px 6px; border-radius: 4px;\

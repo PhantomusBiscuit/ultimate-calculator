@@ -1,3 +1,7 @@
+/**
+ * Required Notice: Copyright Ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+ */
+
 (function() {
   const consoleTypes = ['log', 'info', 'warn', 'error', 'debug'];
   const stamp = () => (performance.now() / 1000).toFixed(4).padStart(10);
@@ -32,6 +36,41 @@ const observer = new PerformanceObserver((list) => {
     observer.disconnect();
   });
 });
+const /** @type {Array<{ label: ContextMenuItemName; submenu: any[] }>} */ menu = [
+  {
+    label: 'File',
+    submenu: [
+      { label: 'Zoom: 0 (100%)', enabled: false, id: 'zoom-indicator' },
+      { label: 'Zoom in', accelerator: 'CmdOrCtrl+=', role: 'zoomIn', enabled: false },
+      { label: 'Zoom out', accelerator: 'CmdOrCtrl+-', role: 'zoomOut', enabled: false },
+      { label: 'Zoom reset', accelerator: 'CmdOrCtrl+0', role: 'resetZoom', enabled: false },
+      { type: 'separator' },
+      { label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' },
+      { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
+      { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
+      { type: 'separator' },
+      { label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' },
+      { label: 'Force reload', accelerator: 'CmdOrCtrl+Shift+R', role: 'forceReload' },
+      { label: 'Preferences', click: () => uc.openNewWindow('./settings.html'), accelerator: 'CmdOrCtrl+,' },
+      { type: 'separator' },
+      { label: 'Quit', accelerator: 'CmdOrCtrl+Q', role: 'close' },
+    ],
+  },
+  { label: 'Debug', submenu: [{ label: 'Toggle DevTools', accelerator: 'F12', role: 'toggleDevTools' }] },
+  {
+    label: 'Help',
+    get submenu() {
+      return getHelpMenuItems();
+    },
+  },
+  {
+    label: 'About',
+    submenu: [
+      { label: 'Manual', click: () => uc.openNewWindow('./manual.html') },
+      { get label() { return 'Version: ' + uc.version }, enabled: false },
+    ],
+  },
+];
 
 observer.observe({ type: 'navigation', buffered: true });
 
@@ -113,15 +152,11 @@ try {
   p.SQUARED.μ.name = 'μ';
   // p.SQUARED.mu.name = 'μ';
   // #endregion
-  setTimeout(() => {
-    o.syncContrast();
-    o.syncTheme();
-    o.syncTitle();
-  }, 500);
 } catch {}
 try {
   if (location.hash === '#embed') {
-    document.querySelector('.global-actions').style.backgroundColor = 'linear-gradient(\
+    console.debug('Running in %ciframe%c mode', codeStyle, '');
+    document.querySelector('.global-actions').style.background = 'linear-gradient(\
     to bottom,\
     var(--button-o) 0%, var(--button-o) 5%,\
     var(--button) 5%, transparent 80%) !important';
@@ -129,18 +164,19 @@ try {
   }
   if (!window.queryLocalFonts) {
     window.queryLocalFonts = function() {
+      console.log('query local fonts');
       return new Promise(res => res([]));
     };
   };
-  Object.defineProperty(window, 'legacyApi', {
+  Object.defineProperty(window, 'legacyUC', {
     get() {
-      if (!('ultimate-calculator' in navigator.app))
-        console.warn('Please avoid using %clegacyApi%c, use it specifically for other browsers.', codeStyle, '');
+      if (('ultimate-calculator' in navigator.app) && navigator.userAgent.includes('ultimate-calculator'))
+        console.warn('Please avoid using %clegacyUC%c, use it specifically for other browsers.', codeStyle, '');
       return {
         close: function() { window.close() },
-        getMenuNames: async function() { return ['File', 'Debug', 'Help', 'About'] },
-        getZoom: async function() { return (window?.devicePixelRatio ?? 0).toFixed(4) },
-        getZoomLevel: async function() { return 0 },
+        getMenuNames: async function() { return menu.map(a => a.label); },
+        getZoom: async function() { return 1 },
+        getZoomLevel: async function() { return ((window?.devicePixelRatio ?? 1).toFixed(4) - 0) * 20 - 20 },
         isAlwaysOnTop: async function() { return false },
         isFullscreen: async function() { return false },
         isMaximized: async function() { return false },
@@ -148,13 +184,13 @@ try {
         minHeight: 0,
         minWidth: 0,
         minimize: async function() { console.warn('Cannot minimize') },
-        onWindowState: async function() { console.warn('%conWindowState%c is not defined', codeStyle, '') },
+        onWindowState: async function() {},
         openNewWindow: async function(loc) {
           let parentFrame = $n('section');
           let frame = $n('iframe');
 
           parentFrame.className = 'iframe-section';
-          parentFrame.innerHTML = '<div class="dragger"></div>';
+          parentFrame.innerHTML = '<button class="btn-neutral dragger"></button>';
           parentFrame.style.width = '0';
           parentFrame.style.height = '0';
 
@@ -162,18 +198,19 @@ try {
           frameButtons.append(
             Object.assign($n('span'), {
               className: 'frame-title',
-              innerHTML: '<i dim>Subwindow – Loading…</i><br><code class="frame-url">about:blank</code>'
+              innerHTML: '<i dim>Subwindow – Loading…</i>'
             }),
-            Object.assign($n('i'), { style: 'width:8px' }),
             Object.assign($n('button'), {
-              className: 'btn-transparent reload-iframe',
+              className: 'btn-neutral reload-iframe',
               onclick: () => frame.contentWindow.location.reload(),
               innerHTML: '<i class="mdi mdi-reload"></i>',
+              title: 'Reload frame',
             }),
             Object.assign($n('button'), {
-              className: 'btn-transparent force-close-iframe',
+              className: 'btn-neutral force-close-iframe',
               onclick: () => { frame.contentWindow.close(); parentFrame.remove(); },
               innerHTML: '<i class="mdi mdi-window-close"></i>',
+              title: 'Close frame',
             }),
           );
           parentFrame.append(frameButtons);
@@ -183,8 +220,7 @@ try {
           frame.className = 'iframe-window';
           frame.addEventListener('load', () => {
             frameButtons.$('.frame-title').innerHTML =
-              (frame.contentDocument?.title ?? 'Window').toSafeHTML() +
-              `<br><code class="frame-url">${frame.src.toSafeHTML()}</code>`;
+              (frame.contentDocument?.title ?? 'Window').toSafeHTML();
             const observer = new MutationObserver(() => {
               frameButtons.$('.frame-title').textContent = frame.contentDocument?.title ?? 'Window';
             });
@@ -237,21 +273,37 @@ try {
           });
         },
         openNewFunctionPreviewWindow: function(fn) { this.openNewWindow(`./function-preview.html?function=${encodeURIComponent(String(fn))}`) },
-        pid: function() { return -1 },
+        pid: function() { return 0 },
         screenshot: async function() { console.warn('Cannot screenshot') },
         setMinSize: async function() { console.warn('Cannot set minimum size') },
-        showContextMenu: async function() {},
+        showContextMenu: async function() {
+          /** @typedef {'File' | 'Debug' | 'Help' | 'About'} ContextMenuItemName */
+          let position = { x: Math.trunc(arguments[0]) - 8, y: Math.trunc(arguments[1]) - 8 };
+          let /** @type {ContextMenuItemName} */ chosen = arguments[2];
+          const decoyEl = {
+            offsetWidth: position.x,
+            offsetHeight: position.y,
+            getBoundingClientRect() {
+              return { left: position.x, bottom: position.y };
+            },
+          };
+          if (!chosen) {
+            o.contextMenu(decoyEl, menu);
+            return;
+          }
+          o.contextMenu(decoyEl, menu.find(a => a.label === chosen).submenu);
+        },
         simulateBackspace: async function() { window.dispatchEvent(new KeyboardEvent('keydown', {altKey:false,code:'Backspace',key:'Backspace'})) },
         simulateChar: async function(e) { window.dispatchEvent(new KeyboardEvent('keydown', {altKey:false,key:e,code:`${!/\d/i.test(e) ? 'Digit' : 'Key'}${e}`})) },
         simulateKey: async function(e) { console.warn('Cannot simulate key %c' + e, codeStyle) },
-        system: function() { return { platform: navigator.userAgentData.platform.toLowerCase(), distro: null, wm: null, kernel: null, desktop: null } },
+        system: function() { return { platform: navigator.platform.toLowerCase(), distro: null, wm: null, kernel: null, desktop: null } },
         toggleDevTools: async function() { console.warn('Cannot open DevTools') },
         toggleKeepOnTop: async function() { console.warn('Cannot toggle Always On Top') },
         toggleMaximize: async function() { console.warn('Cannot maximize/restore') },
         versions: async function() {
           return {
             node: null, chrome: navigator.app?.Chrome ?? navigator.app?.Firefox,
-            electron: null, v8: null
+            electron: null, v8: null, uc: this.version
           }
         },
         zoom: function(e) { console.warn('Cannot zoom ' + e) },
@@ -266,6 +318,8 @@ try {
         appUptime: function() {
           return performance.now();
         },
+        updateHelp: async function() {},
+        version: '3.4.13',
         __proto__: {
           [Symbol.toStringTag]: 'LegacyElectronAPI'
         },
@@ -281,9 +335,10 @@ try {
           .map(a => a.split('/'))
       );
     },
+    configurable: false
   });
   if ((!('uc' in window) || window.uc?.isNull) && !('ultimate-calculator'in navigator.app)) {
-    window.uc = legacyApi;
+    window.uc = legacyUC;
   };
 } catch (e) {
   new Toast('An error has occured:\n' + e.toString(), 'warning', 'assets/icons/warning.svg');
@@ -551,7 +606,7 @@ class Settings {
     /** @type {number} */ precision: 15,
     /** @type {'number' | 'BigNumber'} */ numberMode: 'number',
     /** @type {'rectangular' | 'polar'} */ complexMode: 'rectangular',
-    /** @type {'double' | 'single'} */ quoteNotation: 'single',
+    /** @type {'"' | '\''} */ quoteNotation: '\'',
     /** @type {',' | "'" | ' ' | ''} */ thousandsSeparator: ' ',
     /** @type {',' | "'" | ' ' | ''} */ thousandthsSeparator: ' ',
     /** @type {boolean} */ livePreview: true,
@@ -575,6 +630,10 @@ class Settings {
       type: 'content',
       values: [
         (async () => {
+          let fonts = [];
+          try {
+            fonts = [...new Set((await queryLocalFonts()).map(a => a.family))];
+          } catch {};
           return {
             label: 'Application font',
             values: [
@@ -582,7 +641,7 @@ class Settings {
               { label: 'Sans serif', value: 'sans-serif' },
               { label: 'Serif', value: 'serif' },
               { label: 'Monospace', value: 'monospace' },
-              ...[...new Set((await queryLocalFonts()).map(a => a.family))].map((/** @type {string} */ a) => {
+              ...fonts.map((/** @type {string} */ a) => {
                 return { label: a, value: a };
               }),
             ],
@@ -592,6 +651,10 @@ class Settings {
           };
         })(),
         (async () => {
+          let fonts = [];
+          try {
+            fonts = [...new Set((await queryLocalFonts()).map(a => a.family))];
+          } catch {};
           return {
             label: 'Expressions font',
             values: [
@@ -599,7 +662,7 @@ class Settings {
               { label: 'Sans serif', value: 'sans-serif' },
               { label: 'Serif', value: 'serif' },
               { label: 'Monospace', value: 'monospace' },
-              ...[...new Set((await queryLocalFonts()).map(a => a.family))].map((/** @type {string} */ a) => {
+              ...fonts.map((/** @type {string} */ a) => {
                 return { label: a, value: a };
               }),
             ],
@@ -688,7 +751,7 @@ class Settings {
             { label: "Single (')", value: "'" },
             { label: 'Double (")', value: '"' },
           ],
-          default: 1,
+          default: 0,
           id: 'math.quoteNotation',
         },
         {
@@ -828,6 +891,11 @@ class Settings {
     const last = parts.pop();
     const target = parts.reduce((obj, k) => obj[k], this);
     target[last] = value;
+  }
+
+  refresh() {
+    let channel = new BroadcastChannel('ultimate-calculator:settings');
+    channel.postMessage({ type: 'ultimate-calculator-settings-changed', changed: true });
   }
 
   static fromJSON(json) {
@@ -1443,10 +1511,9 @@ var m = {
    */
   format(text, debug) {
     debug ??= false;
-    let localConsole = { log: function() {} };
+    let localConsole = { log: () => {} };
     if (debug === true || debug.debug === true) localConsole = console;
     let parsedText = text;
-    console.debug('Ran %cm.format%c %o', codeStyle, '', {text, debug});
     function formatNumber(str, interval = 3) {
       str = String(str);
 
@@ -1599,13 +1666,13 @@ var m = {
         return result;
       }
       if (arg.args.length === 2) {
-        const left = check(arg.args[0].isParenthesisNode ? arg.args[0].content : arg.args[0]);
+        const left = check(arg.args[0]);
         const op = arg.op || arg.fn || '?';
-        const right = check(arg.args[1].isParenthesisNode ? arg.args[1].content : arg.args[1]);
+        const right = check(arg.args[1]);
         return op === '/'
           ? `<calc-div div-type="divide"><span>${left}</span><hr><span><div class="division">/</div>${right}</span></calc-div>`
           : op === '^'
-            ? `<calc-pow><span>${left}</span><span>${right}</span></calc-pow>`
+            ? `<calc-pow><calc>${left}</calc><calc>${right}</calc></calc-pow>`
             : // : arg.args[1]?.args?.[1]?.name === 'i' || arg.args[1]?.args?.[0]?.name === 'i'
               // : math.complex(arg.toString().replace(/\s/g,'')).im !== 0
               // ? `<calc-op>(</calc-op>${
@@ -1653,7 +1720,7 @@ var m = {
       function replacedText(mantissa, exponent) {
         const power = exponent - 0;
         if (!power) return mantissa;
-        const pow = `<calc-pow><span>10</span><span>${formatNumber(power)}</span></calc-pow>`;
+        const pow = `<calc-pow><calc><calc-num num-type="number">10</calc-num></calc><calc><calc-num num-type="number">${formatNumber(power)}</calc-num></calc></calc-pow>`;
         return mantissa - 0 === 1 ? pow : `${mantissa}<calc-op>×</calc-op>${pow}`;
       }
 
@@ -1776,7 +1843,9 @@ var m = {
      * @returns {string}
      */
     function checkRangeNode(arg) {
-      return `<calc-op>{</calc-op>${check(arg.start)}<calc-op>→</calc-op>${check(arg.end)}<calc-sep>;\u2006</calc-sep>${check(arg.step ?? 1)}<calc-op>}</calc-op>`;
+      if (debug?.raw)
+        return `${check(arg.start)}<calc-op>:</calc-op>${arg.step ? `${check(arg.step)}<calc-op>:</calc-op>` : ''}${check(arg.end ?? 1)}`;
+      return `<calc-op>&lt;</calc-op>${check(arg.start)}<calc-op>:</calc-op>${check(arg.end)}<calc-op>@</calc-op>${check(arg.step ?? 1)}<calc-op>&gt;</calc-op>`;
     }
     /**
      * @param {math.Matrix} arg
@@ -1798,14 +1867,17 @@ var m = {
      * @param {{ s: -1n | 1n; n: bigint; d: bigint } | math.Fraction} arg
      */
     function checkFraction(arg) {
-      return `<calc-div div-type="fraction"><span>${arg.n * arg.s}</span><hr><span><div class="division">/</div>${arg.d}</span></calc-div>`;
+      return `<calc-div div-type="fraction"><span>${checkConstantNode(arg.n * arg.s)}</span><hr><span><div class="division">/</div>${checkConstantNode(arg.d)}</span></calc-div>`;
     }
     /**
      * @param {Date} arg
      * @returns {string}
      */
     function checkDate(arg) {
-      return `<calc-date>${arg.toISOString()}</calc-date>`;
+      let arr = arg.toString().split(/\s\(|\)/).filter(Boolean);
+      if (arr[1])
+        return `<calc-date><span class="date">${arr[0]}</span><i class="tz">${arr[1]}</i></calc-date>`;
+      return `<calc-date><span class="date">${arr[0]}</span></calc-date>`;
     }
     /**
      * @param {math.IndexNode} arg
@@ -2946,7 +3018,8 @@ class Button {
         parent.shift(false); parent.alpha(false);
       }
     };
-    button.oncontextmenu = () => {
+    button.oncontextmenu = (e) => {
+      e.preventDefault();
       if (button.hasAttribute('previewing')) return;
       let { width: originalWidth, height: originalHeight } = button.getBoundingClientRect();
       let originalText = button.style.cssText;
@@ -3345,11 +3418,13 @@ let removeLoading = () => {
 };
 document.addEventListener('DOMContentLoaded', () => {
   removeLoading();
-  if ($body.innerHTML.includes('class="toasts"')) $body.append(Object.assign($n('section'), { className: 'toasts' }));
+  o.syncContrast();
+  o.syncTheme();
+  o.syncTitle();
 });
 if (!location.pathname.includes('index.html') && location.hash === '#embed') {
   let _close = close;
-  var close = () => {
+  window.close = () => {
     window.parent.postMessage({ type: 'close-iframe', id: navigation.currentEntry.key }, '*');
     _close();
   };
@@ -3376,7 +3451,7 @@ function getHelpMenuItems() {
     const prefix = isFunction ? '(ƒ) ' : '(c) ';
     if (!grouped[category]) grouped[category] = [];
     grouped[category].push({
-      label: key, click: () => uc.openNewWindow(`uc://public/help.html?function=${key}`)
+      label: key, click: () => uc.openNewWindow(`./help.html?function=${key}`)
     });
   }
   return Object.keys(grouped)
@@ -3407,5 +3482,5 @@ export {
   CompressedStorage, Compressor,
   Toast, Console, KeyInspector,
   Button, ButtonDisplay, ButtonGroup,
-  ButtonRow, CalcDisplay,
+  ButtonRow, CalcDisplay, Settings
 }

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+  Required Notice: Copyright ⓒ 2026 PhantomusBiscuit (https://phantomusbiscuit.github.io/ultimate-calculator)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Calculator &ndash; Greeting</title>
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+    }
+    :root {
+      --bg-light: light-dark(hsl(0 0% 98%), hsl(0 0% 0%));
+      --bg: light-dark(hsl(0 0% 96%), hsl(0 0% 5%));
+      --bg-dark: light-dark(hsl(0 0% 92%), hsl(0 0% 10%));
+      --bg-dark-2: light-dark(hsl(0 0% 88%), hsl(0 0% 15%));
+      --bg-dark-3: light-dark(hsl(0 0% 84%), hsl(0 0% 20%));
+      --bg-dark-4: light-dark(hsl(0 0% 80%), hsl(0 0% 25%));
+      --bg-dark-5: light-dark(hsl(0 0% 76%), hsl(0 0% 30%));
+      --text: light-dark(hsl(0 0% 12%), hsl(0 0% 90%));
+    }
+    body::-webkit-scrollbar {width: 8px; height: 8px;}
+    ::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 99px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; background: var(--bg-dark); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: var(--bg-dark-3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--bg-dark-4); }
+    ::-webkit-scrollbar-thumb:active { background: var(--bg); }
+    ::-webkit-scrollbar-corner { display: none; }
+    body {
+      background-color: var(--bg-light);
+      color: var(--text);
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      margin: 0; padding: 12px; gap: 12px;
+      height: 100dvh; height: 100vh;
+      display: grid; grid-template-rows: auto 1fr auto;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    main {
+      height: 100%; display: block;
+      overflow-y: auto; padding-right: 4px;
+    }
+    nav {
+      display: grid; grid-template-columns: 32px 1fr auto;
+      gap: 6px; background-color: var(--bg);
+      padding: 4px 12px; border-radius: 16px;
+    }
+    a {
+      color: var(--text);
+    }
+    a:not(nav > ul > li > a) {
+      padding-left: 20px;
+      background: light-dark(
+        url('data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxNnB4IiB3aWR0aD0iMTZweCIgZmlsbD0iaHNsKDAgMCUgMTIlKSI+PHBhdGggZD0iTTcuOTUsMjFxLTIuMDUsMC0zLjUtMS40NVQzLDE2LjA1cTAtMSAwLjM4LTEuOXQxLjA4LTEuNkw3LjgsOS4yM2wxLjQsMS40TDUuODUsMTMuOThRNS40MywxNC40IDUuMjEsMTQuOTRUNSwxNi4wNXEwLDEuMjIgMC44NiwyLjA5VDcuOTUsMTlxMC41OCwwIDEuMTMtMC4yMXQwLjk3LTAuNjRsMy4zMi0zLjM1bDEuNDMsMS40M2wtMy4zNSwzLjMycS0wLjcsMC43LTEuNiwxLjA3VDcuOTUsMjFabTEuOTgtNS41TDguNSwxNC4wOEwxNC4wOCw4LjVMMTUuNSw5LjkyTDkuOTMsMTUuNVptNi4yNy0wLjdsLTEuNC0xLjQybDMuMzUtMy4zM3EwLjQyLTAuNDIgMC42My0wLjk1VDE4Ljk4LDhxMC0xLjI1LTAuODUtMi4xM1ExNy4yOCw1IDE2LjAzLDVxLTAuNTgsMC0xLjExLDAuMjFxLTAuNTQsMC4yMS0wLjk2LDAuNjRMMTAuNjMsOS4yTDkuMiw3LjhsMy4zNS0zLjM1cTAuNy0wLjcgMS42LTEuMDdUMTYuMDUsM3EyLjA1LDAgMy40OSwxLjQ1dDEuNDQsMy41MnEwLDAuOTgtMC4zNiwxLjg4dC0xLjA2LDEuNkwxNi4yLDE0LjhaIi8+PC9zdmc+'),
+        url('data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxNnB4IiB3aWR0aD0iMTZweCIgZmlsbD0iaHNsKDAgMCUgOTUlKSI+PHBhdGggZD0iTTcuOTUsMjFxLTIuMDUsMC0zLjUtMS40NVQzLDE2LjA1cTAtMSAwLjM4LTEuOXQxLjA4LTEuNkw3LjgsOS4yM2wxLjQsMS40TDUuODUsMTMuOThRNS40MywxNC40IDUuMjEsMTQuOTRUNSwxNi4wNXEwLDEuMjIgMC44NiwyLjA5VDcuOTUsMTlxMC41OCwwIDEuMTMtMC4yMXQwLjk3LTAuNjRsMy4zMi0zLjM1bDEuNDMsMS40M2wtMy4zNSwzLjMycS0wLjcsMC43LTEuNiwxLjA3VDcuOTUsMjFabTEuOTgtNS41TDguNSwxNC4wOEwxNC4wOCw4LjVMMTUuNSw5LjkyTDkuOTMsMTUuNVptNi4yNy0wLjdsLTEuNC0xLjQybDMuMzUtMy4zM3EwLjQyLTAuNDIgMC42My0wLjk1VDE4Ljk4LDhxMC0xLjI1LTAuODUtMi4xM1ExNy4yOCw1IDE2LjAzLDVxLTAuNTgsMC0xLjExLDAuMjFxLTAuNTQsMC4yMS0wLjk2LDAuNjRMMTAuNjMsOS4yTDkuMiw3LjhsMy4zNS0zLjM1cTAuNy0wLjcgMS42LTEuMDdUMTYuMDUsM3EyLjA1LDAgMy40OSwxLjQ1dDEuNDQsMy41MnEwLDAuOTgtMC4zNiwxLjg4dC0xLjA2LDEuNkwxNi4yLDE0LjhaIi8+PC9zdmc+')
+      ) no-repeat left;
+    }
+    a:not(nav > ul > li > a)[href^='mailto:'] {
+      background-image: light-dark(
+        url('data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxNnB4IiB3aWR0aD0iMTZweCIgZmlsbD0iaHNsKDAgMCUgMTIlKSI+PHBhdGggZD0iTTQsMjBxLTAuODIsMC0xLjQxLTAuNTlUMiwxOFY2UTIsNS4xOCAyLjU5LDQuNTlUNCw0SDIwcTAuODMsMCAxLjQxLDAuNTlRMjIsNS4xOCAyMiw2VjE4cTAsMC44Mi0wLjU5LDEuNDFUMjAsMjBINFptOC03TDQsOFYxOEgyMFY4bC04LDVabTAtMmw4LTVINGw4LDVaTTQsOFY2VjhWMThWOFoiLz48L3N2Zz4'),
+        url('data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxNnB4IiB3aWR0aD0iMTZweCIgZmlsbD0iaHNsKDAgMCUgOTUlKSI+PHBhdGggZD0iTTQsMjBxLTAuODIsMC0xLjQxLTAuNTlUMiwxOFY2UTIsNS4xOCAyLjU5LDQuNTlUNCw0SDIwcTAuODMsMCAxLjQxLDAuNTlRMjIsNS4xOCAyMiw2VjE4cTAsMC44Mi0wLjU5LDEuNDFUMjAsMjBINFptOC03TDQsOFYxOEgyMFY4bC04LDVabTAtMmw4LTVINGw4LDVaTTQsOFY2VjhWMThWOFoiLz48L3N2Zz4')
+      );
+    }
+    nav > * { margin: auto 0; }
+    #favicon { width: 32px; height: 32px; }
+    nav > ul > li {
+      display: inline; margin: 0 8px;
+    }
+    footer {
+      display: flex; border-radius: 16px;
+      width: 100%; padding: 8px 12px;
+      background: var(--bg-dark);
+    }
+    #copyright { margin: auto; }
+    table {
+      border-collapse: collapse;
+      border: 2px solid var(--bg-dark-2);
+    }
+    table thead th {
+      font-weight: bold;
+      padding: 4px 8px; margin-bottom: 2px;
+      background: var(--bg-dark);
+    }
+    table tbody td {
+      border-bottom: 1px solid var(--bg-dark);
+      padding: 4px 8px; margin-bottom: 2px;
+    }
+    code:not(pre > code), pre {
+      background: var(--bg-dark);
+      padding: 1px 4px; border-radius: 4px;
+    }
+    pre[data-language]::before {
+      content: attr(data-language); background: var(--bg);
+      width: max-content; user-select: none;
+      display: block; margin-bottom: 0.25lh; padding: 4px 8px;
+      border-radius: 8px;
+    }
+    pre { padding: 4px 8px; border-radius: 6px; }
+    kbd {
+      background: var(--bg-dark); padding: 2px 6px;
+      border-radius: 6px;
+      box-shadow: 0 calc((1lh + 4px) / 6) var(--bg);
+    }
+    blockquote {
+      margin: 0; padding: 0 2em;
+      border-left: 4px solid var(--bg-dark-5);
+    }
+    .loading {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: wait; background: var(--bg-dark-2);
+      padding: 8px 16px; border-radius: 16px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .loading-circle {
+      background: url('data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTQ0OCA1MTIgNTEyIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHN0eWxlPSJhbmltYXRpb246YSAycyBpbmZpbml0ZSBsaW5lYXI7Ij48c3R5bGU+QGtleWZyYW1lcyBhezAle3RyYW5zZm9ybTpyb3RhdGUoMGRlZyl9MTAwJXt0cmFuc2Zvcm06cm90YXRlKDM2MGRlZyl9fTwvc3R5bGU+PHBhdGggc3R5bGU9InRyYW5zZm9ybS1vcmlnaW46Y2VudGVyIiBkPSJNMjU2LTM2M0wyNTYtNDA1UTIxNC00MDUgMTc0LjUwLTM4OVExMzUtMzczIDEwNS0zNDNRNzUtMzEzIDU5LTI3My41MFE0My0yMzQgNDMtMTkyTDg1LTE5MlE4NS0yMzggMTA4LTI3Ny41MFExMzEtMzE3IDE3MC41MC0zNDBRMjEwLTM2MyAyNTYtMzYzIiBmaWxsPSJsaWdodC1kYXJrKGhzbCgyMTAgMTAwJSA5NSUpLCBoc2woMjEwIDEwMCUgNSUpKSIvPjwvc3ZnPg') no-repeat center;
+      width: 16px; height: 16px; display: inline-block;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin: 0; padding: 0.125em 0.5em;
+    }
+    fieldset > legend {
+      padding-inline: 1em;
+    }
+
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}
+
+    /*!
+      Theme: GitHub (Light/Dark Merged)
+      Description: Dark and Light themes as seen on github.com
+      Author: github.com
+      Maintainer: @Hirse
+      Updated: 2021-05-15
+      Merged with light-dark() for automatic switching.
+    */.hljs{background:light-dark(#fff,#0d1117);color:light-dark(#24292e,#c9d1d9);color-scheme:light dark}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:light-dark(#d73a49,#ff7b72)}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:light-dark(#6f42c1,#d2a8ff)}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id,.hljs-variable{color:light-dark(#005cc5,#79c0ff)}.hljs-meta .hljs-string,.hljs-regexp,.hljs-string{color:light-dark(#032f62,#a5d6ff)}.hljs-built_in,.hljs-symbol{color:light-dark(#e36209,#ffa657)}.hljs-code,.hljs-comment,.hljs-formula{color:light-dark(#6a737d,#8b949e)}.hljs-name,.hljs-quote,.hljs-selector-pseudo,.hljs-selector-tag{color:light-dark(#22863a,#7ee787)}.hljs-subst{color:light-dark(#24292e,#c9d1d9)}.hljs-section{color:light-dark(#005cc5,#1f6feb);font-weight:700}.hljs-bullet{color:light-dark(#735c0f,#f2cc60)}.hljs-emphasis{font-style:italic}.hljs-emphasis,.hljs-strong{color:light-dark(#24292e,#c9d1d9)}.hljs-strong{font-weight:700}.hljs-addition{background-color:light-dark(#f0fff4,#033a16);color:light-dark(#22863a,#aff5b4)}.hljs-deletion{background-color:light-dark(#ffeef0,#67060c);color:light-dark(#b31d28,#ffdcd7)}
+  </style>
+  <script src="./public/libs/highlight.js"></script>
+  <script type="module">
+    import showdown from './public/libs/showdown+esm.js';
+    const converter = new showdown.Converter({
+      ghCompatibleHeaderId: true,
+      parseImgDimensions: true,
+      simplifiedAutoLink: true,
+      excludeTrailingPunctuationFromURLs: true,
+      tasklists: true,
+      tables: true,
+      strikethrough: true,
+      emoji: true,
+      openLinksInNewWindow: true,
+      backslashEscapesHTMLTags: true,
+    });
+    let res = await fetch('./README.md');
+    document.querySelector('main').innerHTML = converter.makeHtml(await res.text());
+    document.querySelectorAll('pre > code').forEach(item => {
+      item.parentElement.setAttribute('data-language', item.classList[0]);
+      item.outerHTML = hljs.highlight(item.textContent, { language: item.classList[0], }).value;
+    });
+    window.load = async (path) => {
+      if (!['./README.md', './LICENSE.md', './THIRD_PARTY_NOTICES.md'].includes(path))
+        throw new TypeError('Specified path cannot be accessed.');
+
+      let res = await fetch(path);
+      document.querySelector('main').innerHTML = converter.makeHtml(await res.text());
+      document.querySelectorAll('pre > code').forEach(item => {
+        item.parentElement.setAttribute('data-language', item.classList[0]);
+        item.outerHTML = hljs.highlight(item.textContent, { language: item.classList[0], }).value;
+      });
+    };
+    Object.defineProperty(window, 'load', {
+      configurable: false, enumerable: false, writable: false
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <img src="./favicon.svg" alt="UC" id="favicon">
+    <span id="title">Ultimate Calculator</span>
+    <ul>
+      <li><a href="#" onclick="load('./README.md')">Documentation</a></li>
+      <li><a href="#" onclick="load('./LICENSE.md')">License</a></li>
+      <li><a href="#" onclick="load('./THIRD_PARTY_NOTICES.md')">Third-Party Notices</a></li>
+      <li>
+        <a target="_blank" href="https://github.com/PhantomusBiscuit/ultimate-calculator">GitHub Repository</a>
+      </li>
+    </ul>
+  </nav>
+  <main>
+    <div class="loading">
+      <div class="loading-circle"></div>
+      Loading&mldr;
+    </div>
+  </main>
+  <footer>
+    <div id="copyright">Copyright &COPY; 2026 PhantomusBiscuit &ndash; <a target="_blank" href="https://phantomusbiscuit.github.io/ultimate-calculator">https://phantomusbiscuit.github.io/ultimate-calculator</a></div>
+  </footer>
+</body>
+</html>
